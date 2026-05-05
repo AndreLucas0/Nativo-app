@@ -15,6 +15,8 @@ Como usuário, quero criar uma conta para acessar a plataforma.
 - Dado que o email já existe  
   Quando tento cadastrar  
   Então devo receber mensagem de erro  
+- Dado que informo dados inválidos  
+  Então o sistema deve impedir o cadastro e exibir mensagens de validação  
 
 ---
 
@@ -28,6 +30,8 @@ Como usuário, quero fazer login para acessar meu progresso.
   Então devo acessar o sistema  
 - Dado credenciais inválidas  
   Então devo ver mensagem de erro  
+- Dado que estou autenticado  
+  Então devo permanecer logado até logout ou expiração de sessão  
 
 ---
 
@@ -38,7 +42,9 @@ Como usuário, quero fazer login para acessar meu progresso.
 Como usuário, quero ver os cursos disponíveis para escolher o que estudar.
 
 **Critérios de Aceitação**
-- Deve exibir:
+- Deve exibir lista de cursos disponíveis  
+- Cada curso deve conter nome e descrição  
+- Exemplo de cursos:
   - Expo  
   - AWS Nuvem  
 
@@ -49,9 +55,10 @@ Como usuário, quero ver os cursos disponíveis para escolher o que estudar.
 Como usuário, quero iniciar um curso para começar meus estudos.
 
 **Critérios de Aceitação**
-- Ao iniciar:
+- Ao iniciar um curso:
   - Progresso deve ser criado  
   - Trilha deve ser liberada  
+- O curso iniciado deve aparecer no progresso do usuário  
 
 ---
 
@@ -61,8 +68,9 @@ Como usuário, quero visualizar a trilha de aprendizado para entender meu progre
 
 **Critérios de Aceitação**
 - Exibir módulos e lições  
-- Mostrar bloqueios  
+- Mostrar lições bloqueadas e desbloqueadas  
 - Destacar progresso atual  
+- Indicar próxima lição disponível  
 
 ---
 
@@ -71,7 +79,9 @@ Como usuário, quero visualizar a trilha de aprendizado para entender meu progre
 Como usuário, quero desbloquear conteúdos conforme avanço.
 
 **Critérios de Aceitação**
-- Lição só libera após anterior concluída  
+- Uma lição só deve ser liberada após a conclusão da anterior  
+- Conteúdos bloqueados devem ser visualmente identificados  
+- O desbloqueio deve ocorrer automaticamente após conclusão  
 
 ---
 
@@ -84,6 +94,7 @@ Como usuário, quero iniciar uma lição para aprender um conteúdo.
 **Critérios de Aceitação**
 - Deve carregar exercícios da lição  
 - Deve exibir instruções iniciais  
+- Deve registrar início da lição  
 
 ---
 
@@ -93,7 +104,9 @@ Como usuário, quero responder exercícios para testar meu conhecimento.
 
 **Critérios de Aceitação**
 - Permitir seleção de resposta  
+- Permitir envio da resposta  
 - Permitir avançar após resposta  
+- Impedir avanço sem responder  
 
 ---
 
@@ -102,8 +115,9 @@ Como usuário, quero responder exercícios para testar meu conhecimento.
 Como usuário, quero receber feedback imediato para aprender com erros.
 
 **Critérios de Aceitação**
-- Mostrar correto/incorreto  
+- Mostrar se a resposta está correta ou incorreta  
 - Mostrar explicação ao errar  
+- Destacar resposta correta  
 
 ---
 
@@ -112,9 +126,10 @@ Como usuário, quero receber feedback imediato para aprender com erros.
 Como usuário, quero concluir uma lição para avançar na trilha.
 
 **Critérios de Aceitação**
-- Deve validar mínimo de acerto  
+- Deve validar percentual mínimo de acerto  
 - Deve registrar conclusão  
 - Deve atualizar progresso  
+- Deve liberar próxima lição  
 
 ---
 
@@ -126,6 +141,8 @@ Como usuário, quero ganhar experiência ao estudar para acompanhar minha evolu�
 
 **Critérios de Aceitação**
 - XP deve ser atribuído ao concluir lição  
+- XP deve variar conforme desempenho  
+- XP acumulado deve ser armazenado  
 
 ---
 
@@ -134,8 +151,9 @@ Como usuário, quero ganhar experiência ao estudar para acompanhar minha evolu�
 Como usuário, quero subir de nível conforme ganho XP.
 
 **Critérios de Aceitação**
-- Nível aumenta automaticamente  
+- Nível deve aumentar automaticamente ao atingir XP necessário  
 - Exibir nível atual  
+- Exibir progresso até próximo nível  
 
 ---
 
@@ -145,7 +163,8 @@ Como usuário, quero manter uma sequência diária de estudos.
 
 **Critérios de Aceitação**
 - Incrementar streak ao estudar no dia  
-- Resetar se não estudar  
+- Resetar streak se não estudar  
+- Exibir streak atual  
 
 ---
 
@@ -157,6 +176,8 @@ Como usuário, quero receber conquistas para me motivar.
 - Conceder medalhas por:
   - Dias consecutivos  
   - Conclusão de módulos  
+- Exibir conquistas obtidas  
+- Notificar ao desbloquear conquista  
 
 ---
 
@@ -170,6 +191,8 @@ Como usuário, quero ver meu progresso para acompanhar evolução.
 - Mostrar:
   - Progresso por curso  
   - Progresso por módulo  
+- Exibir percentual de conclusão  
+- Atualizar em tempo real  
 
 ---
 
@@ -179,7 +202,8 @@ Como usuário, quero ver lições concluídas.
 
 **Critérios de Aceitação**
 - Listar lições realizadas  
-- Mostrar desempenho  
+- Mostrar desempenho (acertos/erros)  
+- Permitir acesso ao histórico detalhado  
 
 ---
 
@@ -191,7 +215,8 @@ Como sistema, quero identificar erros recorrentes para melhorar aprendizado.
 
 **Critérios de Aceitação**
 - Registrar erros por exercício  
-- Calcular taxa de erro  
+- Calcular taxa de erro por tema  
+- Armazenar histórico de erros  
 
 ---
 
@@ -200,7 +225,9 @@ Como sistema, quero identificar erros recorrentes para melhorar aprendizado.
 Como usuário, quero receber sugestões de revisão para reforçar aprendizado.
 
 **Critérios de Aceitação**
-- Exibir lista de conteúdos frágeis  
+- Exibir lista de conteúdos com maior taxa de erro  
+- Priorizar conteúdos mais críticos  
+- Atualizar sugestões dinamicamente  
 
 ---
 
@@ -210,6 +237,8 @@ Como usuário, quero refazer exercícios com base nos meus erros.
 
 **Critérios de Aceitação**
 - Gerar exercícios personalizados  
+- Priorizar questões erradas anteriormente  
+- Permitir repetir revisões  
 
 ---
 
@@ -221,24 +250,50 @@ Como administrador, quero criar cursos para disponibilizar conteúdo.
 
 **Critérios de Aceitação**
 - Criar curso com nome e descrição  
+- Validar campos obrigatórios  
+- Persistir curso na base de dados  
 
 ---
 
 ### US21 – Criar módulo
 **User Story**  
-Como administrador, quero criar módulos dentro de um curso.
+Como administrador, quero criar módulos dentro de um curso para organizar o conteúdo.
+
+**Critérios de Aceitação**
+- Dado que um curso existe  
+  Quando crio um módulo  
+  Então ele deve ser vinculado ao curso  
+- Deve permitir definir nome e ordem do módulo  
+- Deve validar campos obrigatórios  
 
 ---
 
 ### US22 – Criar lição
 **User Story**  
-Como administrador, quero criar lições para estruturar conteúdo.
+Como administrador, quero criar lições para estruturar o conteúdo de aprendizado.
+
+**Critérios de Aceitação**
+- Dado que um módulo existe  
+  Quando crio uma lição  
+  Então ela deve ser vinculada ao módulo  
+- Deve permitir definir título e conteúdo da lição  
+- Deve respeitar ordenação dentro do módulo  
 
 ---
 
 ### US23 – Criar exercício
 **User Story**  
 Como administrador, quero criar exercícios para as lições.
+
+**Critérios de Aceitação**
+- Dado que uma lição existe  
+  Quando crio um exercício  
+  Então ele deve ser vinculado à lição  
+- Deve permitir cadastrar:
+  - Pergunta  
+  - Alternativas  
+  - Resposta correta  
+- Deve validar consistência dos dados  
 
 ---
 
@@ -250,11 +305,19 @@ Como usuário, quero receber lembretes para não esquecer de estudar.
 
 **Critérios de Aceitação**
 - Enviar notificação diária  
+- Permitir configuração de horário  
+- Não enviar se desativado  
 
 ---
 
 ### US25 – Configurar notificações
 **User Story**  
-Como usuário, quero controlar notificações.
+Como usuário, quero controlar notificações para personalizar minha experiência.
+
+**Critérios de Aceitação**
+- Permitir ativar/desativar notificações  
+- Permitir configurar horário de envio  
+- Persistir preferências do usuário  
+- Aplicar configurações imediatamente  
 
 ---
