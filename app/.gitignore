@@ -1,11 +1,26 @@
-HELP.md
+# Spring Boot Application .gitignore
+# This file is specific to the /app directory
+
+### Maven ###
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
 
-### STS ###
+### Spring Boot ###
+HELP.md
+spring-boot-starter-parent/
+
+### STS (Spring Tool Suite) ###
 .apt_generated
+.apt_generated_test
 .classpath
 .factorypath
 .project
@@ -13,21 +28,35 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+### Java ###
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+### Application Specific ###
+application-local.properties
+application-local.yml
+application-secrets.properties
+application-secrets.yml
 
-### VS Code ###
-.vscode/
+### H2 Database (for local development) ###
+*.h2.db
+*.mv.db
+*.trace.db
+
+### Test Coverage ###
+.coverage
+.pytest_cache/
+.hypothesis/
+
+### Gradle (if migrated in future) ###
+.gradle
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+

@@ -215,7 +215,7 @@ Cada lição contém:
 
 ### Autenticação
 
-- JWT ou Cognito
+- JWT
 
 ---
 
