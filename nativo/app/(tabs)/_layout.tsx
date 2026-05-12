@@ -1,52 +1,54 @@
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
-import { House } from 'lucide-react-native';
-import { Crown } from 'lucide-react-native';
-import { Medal } from 'lucide-react-native'
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: "#35f600",   // verde
-        tabBarInactiveTintColor: "#888",    // cinza (ou branco se quiser)
+        tabBarStyle: {
+          backgroundColor: "#1C1C1C",
+          borderTopColor: "#2A2A2A",
+          height: 60,
+          paddingBottom: 8,
+        },
+        tabBarActiveTintColor: "#4CAF50",
+        tabBarInactiveTintColor: "#666",
+        tabBarLabelStyle: { fontSize: 10, fontWeight: "700" },
       }}
     >
-
-      <Tabs.Screen name="index" options={{ title: "Aprender", headerShown: false, tabBarIcon: ({ color }) => <House size={24} color={color} /> }} />
-      <Tabs.Screen name="ranking" options={{ title: "Ranking", headerShown: false, tabBarIcon: ({ color }) => <Crown size={24} color={color} /> }} />
-      <Tabs.Screen name="premios" options={{ title: "Prêmios", headerShown: false, tabBarIcon: ({ color }) => <Medal size={24} color={color} /> }} />
-
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "APRENDER",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="home" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ranking"
+        options={{
+          title: "RANKING",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="emoji-events" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="premios"
+        options={{
+          title: "PRÊMIOS",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="gift-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      {/* esconde questao da tab bar */}
+      <Tabs.Screen
+        name="questao"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#000', // Fundo preto
-    borderTopWidth: 4,
-    borderColor: '#35f600', // Borda verd
-    height: 75,
-    paddingTop: 5,
-    paddingBottom: 12,
-
-  },
-  tabBarLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  tabItem: {
-    paddingTop: 5,
-  },
-  indicator: {
-    position: 'absolute',
-    top: -8, // Cola no topo da tab bar
-    width: 25,
-    height: 3,
-    backgroundColor: '#CE0000', // Vermelho da linha indicadora
-    borderRadius: 2,
-  }
-});
