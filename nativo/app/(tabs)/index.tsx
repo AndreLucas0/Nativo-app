@@ -1,11 +1,12 @@
-
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { Flame, Zap, Heart } from "lucide-react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 import CardUnidade from "../components/cardUnidade";
 import { BookOpen } from 'lucide-react-native';
 import TrilhaItem from "../components/trilhaItem";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Flame, Zap, Heart } from "lucide-react-native";
+import { useFonts } from "expo-font";
+import { router } from "expo-router";
 
 export default function Index() {
   const [fontsLoaded] = useFonts({
@@ -137,6 +138,32 @@ export default function Index() {
 
 
         {/* UNIDADE 2  ------------------------------------------------------------------*/}
+      {/* TESTE — remover depois que o menu de mapa estiver pronto */}
+      <View style={{ paddingHorizontal: 20, marginTop: 24, gap: 10 }}>
+        <Text style={{ color: "#888", fontSize: 12, marginBottom: 4 }}>
+          TESTE DE NAVEGAÇÃO
+        </Text>
+        {[
+          { label: "Nível 1 · Atividade 1", nivel: 1, atividade: 1 },
+          { label: "Nível 1 · Atividade 2", nivel: 1, atividade: 2 },
+          { label: "Nível 2 · Atividade 1", nivel: 2, atividade: 1 },
+          { label: "Nível 3 · Atividade 3", nivel: 3, atividade: 3 },
+        ].map((item) => (
+          <TouchableOpacity
+            key={`${item.nivel}-${item.atividade}`}
+            style={{
+              backgroundColor: "#1c1c1e",
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: 1,
+              borderColor: "#333",
+            }}
+            onPress={() => router.push(`/atividade/${item.nivel}/${item.atividade}`)}
+          >
+            <Text style={{ color: "#fff", fontWeight: "600" }}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
         <CardUnidade
           titulo="Intermediário - Componentes"
