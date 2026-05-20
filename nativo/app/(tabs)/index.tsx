@@ -2,6 +2,9 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Flame, Zap, Heart } from "lucide-react-native";
 import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
+import CardUnidade from "../components/cardUnidade";
+import { BookOpen } from 'lucide-react-native';
 
 export default function Index() {
   const [fontsLoaded] = useFonts({
@@ -23,16 +26,7 @@ export default function Index() {
         {/* ESQUERDA */}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {/* LOGO */}
-          <View style={{
-            width: 40,
-            height: 40,
-            borderRadius: 14,
-            backgroundColor: "#9EF01A",
-            justifyContent: "center",
-            alignItems: "center",
-            marginRight: 12,
-          }}
-          >
+          <View style={styles.logo}>
             <Text style={{ fontSize: 23, fontWeight: "bold", color: "#000" }}>
               N
             </Text>
@@ -45,20 +39,9 @@ export default function Index() {
         </View>
 
         {/* DIREITA */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
+        <View style={styles.statsContainer}>
           {/* FOGO */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
+          <View style={styles.statItem}>
             <Flame size={20} color="#FF7A00" />
             <Text
               style={{
@@ -72,12 +55,7 @@ export default function Index() {
           </View>
 
           {/* ENERGIA */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
+          <View style={styles.statItem}>
             <Zap size={20} color="#FFD60A" fill="#FFD60A" />
             <Text
               style={{
@@ -92,7 +70,7 @@ export default function Index() {
 
           {/* VIDA */}
           <View
-            style={{ flexDirection: "row", alignItems: "center" }}>
+            style={styles.statItem}>
             <Heart size={20} color="#FF4D6D" fill="#FF4D6D" />
             <Text
               style={{ color: "#FF4D6D", marginLeft: 4, fontWeight: "bold", }}>
@@ -117,12 +95,30 @@ export default function Index() {
       </View>
 
       {/* UNIDADE 1  ------------------------------------------------------------------*/}
-      <View>
+
+     
+      <CardUnidade
+        titulo="Básico - Introdução a Expo"
+        numero={1}
+        tema="verde"
+        icon={<BookOpen size={30} color="#9EF01A" />}
+      />
+       <CardUnidade
+        titulo="Intermediário - Componentes"
+        numero={2}
+        tema="azul"
+        icon={<BookOpen size={30} color="#00AED1" />}
+      />
+       <CardUnidade
+        titulo="Avançado - Dominio total"
+        numero={3}
+        tema="amarelo"
+        icon={<BookOpen size={30} color="#FFD60A" />}
+      />
 
 
-      </View>
 
-    </View>
+    </View >
   );
 }
 
@@ -164,4 +160,5 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontWeight: "bold",
   },
+
 });
