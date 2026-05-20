@@ -99,7 +99,7 @@ docs/api/generated/
 
 ### Kiro ###
 # Ignore all Kiro files
-.kiro/
+
 
 ### Application Specific ###
 # Add any project-specific files to ignore here
