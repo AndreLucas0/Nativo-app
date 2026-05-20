@@ -1,5 +1,9 @@
-
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
+import CardUnidade from "../components/cardUnidade";
+import { BookOpen } from 'lucide-react-native';
+import TrilhaItem from "../components/trilhaItem";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { Flame, Zap, Heart } from "lucide-react-native";
 import { useFonts } from "expo-font";
 import { router } from "expo-router";
@@ -14,109 +18,126 @@ export default function Index() {
     return null;
   }
 
+  const trilha = [
+    {
+      titulo: "CONHECENDO O EXPO",
+      rota: "/ranking",
+    },
+    {
+      titulo: "COMPONENTES ESSENCIAIS",
+      rota: "/",
+    },
+    {
+      titulo: "COMANDOS & ESTRUTURA",
+      rota: "/",
+    },
+  ];
+
+  const posicoes = ["left", "center", "right"] as const;
+
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
+    <ScrollView >
+      <View style={styles.container}>
 
-      {/* HEADER */}
-      <View
-        style={styles.header}
-      >
-        {/* ESQUERDA */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {/* LOGO */}
-          <View style={{
-            width: 40,
-            height: 40,
-            borderRadius: 14,
-            backgroundColor: "#9EF01A",
-            justifyContent: "center",
-            alignItems: "center",
-            marginRight: 12,
-          }}
-          >
-            <Text style={{ fontSize: 23, fontWeight: "bold", color: "#000" }}>
-              N
-            </Text>
-          </View>
-
-          {/* TITULO */}
-          <Text style={{ color: "#FFF", fontSize: 28, fontWeight: "bold" }}>
-            Nativo
-          </Text>
-        </View>
-
-        {/* DIREITA */}
+        {/* HEADER */}
         <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 16,
-          }}
+          style={styles.header}
         >
-          {/* FOGO */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Flame size={20} color="#FF7A00" />
-            <Text
-              style={{
-                color: "#FF7A00",
-                marginLeft: 4,
-                fontWeight: "bold",
-              }}
-            >
-              1
+          {/* ESQUERDA */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* LOGO */}
+            <View style={styles.logo}>
+              <Text style={{ fontSize: 23, fontWeight: "bold", color: "#000" }}>
+                N
+              </Text>
+            </View>
+
+            {/* TITULO */}
+            <Text style={{ color: "#FFF", fontSize: 28, fontWeight: "bold" }}>
+              Nativo
             </Text>
           </View>
 
-          {/* ENERGIA */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Zap size={20} color="#FFD60A" fill="#FFD60A" />
-            <Text
-              style={{
-                color: "#FFD60A",
-                marginLeft: 4,
-                fontWeight: "bold",
-              }}
-            >
-              18
-            </Text>
-          </View>
+          {/* DIREITA */}
+          <View style={styles.statsContainer}>
+            {/* FOGO */}
+            <View style={styles.statItem}>
+              <Flame size={20} color="#FF7A00" />
+              <Text
+                style={{
+                  color: "#FF7A00",
+                  marginLeft: 4,
+                  fontWeight: "bold",
+                }}
+              >
+                1
+              </Text>
+            </View>
 
-          {/* VIDA */}
-          <View
-            style={{ flexDirection: "row", alignItems: "center" }}>
-            <Heart size={20} color="#FF4D6D" fill="#FF4D6D" />
-            <Text
-              style={{ color: "#FF4D6D", marginLeft: 4, fontWeight: "bold", }}>
-              5
-            </Text>
+            {/* ENERGIA */}
+            <View style={styles.statItem}>
+              <Zap size={20} color="#FFD60A" fill="#FFD60A" />
+              <Text
+                style={{
+                  color: "#FFD60A",
+                  marginLeft: 4,
+                  fontWeight: "bold",
+                }}
+              >
+                18
+              </Text>
+            </View>
+
+            {/* VIDA */}
+            <View
+              style={styles.statItem}>
+              <Heart size={20} color="#FF4D6D" fill="#FF4D6D" />
+              <Text
+                style={{ color: "#FF4D6D", marginLeft: 4, fontWeight: "bold", }}>
+                5
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View>
-        <Text style={{ color: "#FFF", fontSize: 25, fontWeight: "bold", marginLeft: 20, marginTop: 20, marginRight: 20, }} >
-          Aprenda{" "}
-          <Text style={{ color: "#9EF01A" }}>
-            Expo
+        <View>
+          <Text style={{ color: "#FFF", fontSize: 25, fontWeight: "bold", marginLeft: 20, marginTop: 20, marginRight: 20, }} >
+            Aprenda{" "}
+            <Text style={{ color: "#9EF01A" }}>
+              Expo
+            </Text>
+            {" "}e{" "}
+            <Text style={{ color: "#00AED1" }}>
+              React Native
+            </Text>
+            {" "}com a Nativo!
           </Text>
-          {" "}e{" "}
-          <Text style={{ color: "#00AED1" }}>
-            React Native
-          </Text>
-          {" "}com a Nativo!
-        </Text>
-      </View>
+        </View>
 
+        {/* UNIDADE 1  ------------------------------------------------------------------*/}
+
+
+        <CardUnidade
+          titulo="Básico - Introdução a Expo"
+          numero={1}
+          tema="verde"
+          icon={<BookOpen size={30} color="#9EF01A" />}
+        />
+
+        <View style={styles.container}>
+          {trilha.map((item, index) => (
+            <TrilhaItem
+              key={index}
+              titulo={item.titulo}
+              rota={item.rota}
+              posicao={posicoes[index % 3]}
+            />
+          ))}
+        </View>
+
+
+        {/* UNIDADE 2  ------------------------------------------------------------------*/}
       {/* TESTE — remover depois que o menu de mapa estiver pronto */}
       <View style={{ paddingHorizontal: 20, marginTop: 24, gap: 10 }}>
         <Text style={{ color: "#888", fontSize: 12, marginBottom: 4 }}>
@@ -144,11 +165,27 @@ export default function Index() {
         ))}
       </View>
 
-    </View>
+        <CardUnidade
+          titulo="Intermediário - Componentes"
+          numero={2}
+          tema="azul"
+          icon={<BookOpen size={30} color="#00AED1" />}
+        />
+
+
+
+
+      </View >
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 2,
+    flex: 1,
+    backgroundColor: "#000",
+  },
   header: {
     paddingTop: 25,
     paddingHorizontal: 20,
@@ -186,4 +223,5 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontWeight: "bold",
   },
+
 });
