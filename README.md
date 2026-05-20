@@ -1,5 +1,16 @@
 # 🎓 Plataforma de Aprendizado Gamificado (Expo + AWS)
 
+## 👥 Integrantes
+
+- André Lucas Ferreira;
+- Caique Tessaroto;
+- Cauã Mesquita;
+- João Machado;
+- João Matias;
+- Leonardo Rodrigues;
+- Lucas Ianovski;
+- Nickolas Machado.
+
 ## 📌 Descrição
 
 Este repositório contém o desenvolvimento de uma plataforma de aprendizado gamificado inspirada em aplicações como o Duolingo, com foco no ensino de tecnologias.
