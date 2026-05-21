@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
 
-type Tema = "verde" | "azul";
+type Tema = "verde" | "azul" | "amarelo";
 
 type Props = {
   titulo: string;
@@ -16,23 +16,19 @@ const temas = {
     borderColor: "#9EF01A",
     shadowColor: "#5BE000",
     textColor: "#9EF01A",
-
-    gradient: ["#4c7903", "#163300", "#0B1200"] as const,
+    gradient: ["#3a6200", "#162800", "#131f24"] as const,
   },
-
   azul: {
     borderColor: "#00AED1",
     shadowColor: "#0086b7",
     textColor: "#00AED1",
-
-    gradient: ["#00384a", "#001b24", "#0B1200"] as const,
+    gradient: ["#00384a", "#001b24", "#131f24"] as const,
   },
   amarelo: {
-    borderColor: "#f7ff0a",
+    borderColor: "#FFD60A",
     shadowColor: "#FFB300",
     textColor: "#FFD60A",
-
-    gradient: ["#948500", "#685700", "#0B1200"] as const,
+    gradient: ["#6b5a00", "#3a3000", "#131f24"] as const,
   },
 };
 
