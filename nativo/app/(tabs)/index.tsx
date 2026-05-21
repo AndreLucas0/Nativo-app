@@ -1,12 +1,9 @@
-import { useFonts } from "expo-font";
-import { LinearGradient } from "expo-linear-gradient";
-import CardUnidade from "../components/cardUnidade";
-import { BookOpen } from 'lucide-react-native';
-import TrilhaItem from "../components/trilhaItem";
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { Flame, Zap, Heart } from "lucide-react-native";
+import { Flame, Zap, Heart, BookOpen } from "lucide-react-native";
 import { useFonts } from "expo-font";
 import { router } from "expo-router";
+import CardUnidade from "../components/cardUnidade";
+import TrilhaItem from "../components/trilhaItem";
 
 export default function Index() {
   const [fontsLoaded] = useFonts({
