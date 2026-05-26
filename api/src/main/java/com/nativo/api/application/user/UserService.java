@@ -3,7 +3,9 @@ package com.nativo.api.application.user;
 import com.nativo.api.domain.user.User;
 import com.nativo.api.domain.user.UserRepository;
 import com.nativo.api.infrastructure.exception.ResourceNotFoundException;
+import com.nativo.api.infrastructure.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile(UUID userId) {
@@ -35,6 +38,19 @@ public class UserService {
         }
 
         return toProfileResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new ValidationException("Senha atual incorreta.");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
     }
 
     private UserProfileResponse toProfileResponse(User user) {

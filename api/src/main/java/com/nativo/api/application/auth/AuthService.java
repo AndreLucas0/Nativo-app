@@ -3,9 +3,12 @@ package com.nativo.api.application.auth;
 import com.nativo.api.domain.user.User;
 import com.nativo.api.domain.user.UserRepository;
 import com.nativo.api.infrastructure.exception.ConflictException;
+import com.nativo.api.infrastructure.exception.ResourceNotFoundException;
 import com.nativo.api.infrastructure.exception.UnauthorizedException;
 import com.nativo.api.infrastructure.security.JwtService;
+import com.nativo.api.infrastructure.security.PasswordResetTokenStore;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final PasswordResetTokenStore passwordResetTokenStore;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -60,13 +65,25 @@ public class AuthService {
     }
 
     public void forgotPassword(ForgotPasswordRequest request) {
-        // MVP: verifica se email existe; envio de email é implementado na Fase 2
-        userRepository.findByEmail(request.email());
+        userRepository.findByEmail(request.email()).ifPresent(user -> {
+            String token = passwordResetTokenStore.createToken(user.getId());
+            // MVP: email é stub — token logado para testes
+            log.info("Password reset token for [{}]: {}", request.email(), token);
+        });
+        // Retorno silencioso independente de o email existir (não vaza informação)
     }
 
     public void resetPassword(ResetPasswordRequest request) {
-        // MVP: stub — reset por token é implementado na Fase 2
-        throw new UnsupportedOperationException("Reset de senha via token não implementado no MVP");
+        var userId = passwordResetTokenStore.consumeToken(request.token());
+        if (userId == null) {
+            throw new UnauthorizedException("Token de reset inválido ou expirado.");
+        }
+
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
     }
 
     private AuthResponse buildAuthResponse(User user) {

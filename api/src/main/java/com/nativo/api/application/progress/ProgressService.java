@@ -1,14 +1,11 @@
 package com.nativo.api.application.progress;
 
 import com.nativo.api.domain.course.Course;
-import com.nativo.api.domain.course.CourseRepository;
 import com.nativo.api.domain.course.Lesson;
 import com.nativo.api.domain.course.LessonRepository;
-import com.nativo.api.domain.progress.LessonCompletion;
 import com.nativo.api.domain.progress.LessonCompletionRepository;
 import com.nativo.api.domain.progress.UserProgress;
 import com.nativo.api.domain.progress.UserProgressRepository;
-import com.nativo.api.domain.user.User;
 import com.nativo.api.domain.user.UserRepository;
 import com.nativo.api.infrastructure.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +27,6 @@ public class ProgressService {
     private final LessonCompletionRepository lessonCompletionRepository;
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
-    private final CourseRepository courseRepository;
 
     public List<ProgressSummaryResponse> getAllProgress(UUID userId) {
         return userProgressRepository.findByUserId(userId)

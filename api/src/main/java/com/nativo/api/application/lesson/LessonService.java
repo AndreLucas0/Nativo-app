@@ -10,7 +10,6 @@ import com.nativo.api.domain.progress.ExerciseAttempt;
 import com.nativo.api.domain.progress.ExerciseAttemptRepository;
 import com.nativo.api.domain.progress.LessonCompletion;
 import com.nativo.api.domain.progress.LessonCompletionRepository;
-import com.nativo.api.domain.progress.UserProgress;
 import com.nativo.api.domain.progress.UserProgressRepository;
 import com.nativo.api.domain.user.UserRepository;
 import com.nativo.api.infrastructure.exception.ConflictException;
