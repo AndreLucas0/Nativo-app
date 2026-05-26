@@ -39,6 +39,12 @@ public class GlobalExceptionHandler {
                 .body(error(403, "Forbidden", ex.getMessage(), req));
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationDomain(ValidationException ex, HttpServletRequest req) {
+        return ResponseEntity.badRequest()
+                .body(error(400, "Bad Request", ex.getMessage(), req));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         String message = ex.getBindingResult().getFieldErrors().stream()
