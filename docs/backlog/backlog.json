@@ -1,0 +1,331 @@
+{
+  "stories": [
+    {
+      "id": "US01",
+      "title": "Cadastro de usuário",
+      "description": "Como usuário, quero criar uma conta para acessar a plataforma.",
+      "acceptance": [
+        "Criar conta com email e senha válidos",
+        "Impedir email duplicado",
+        "Validar dados inválidos"
+      ],
+      "tasks": [
+        { "id": "TS-01-01", "title": "Criar rota POST /users", "objective": "Criar endpoint", "acceptance": ["Rota deve responder"] },
+        { "id": "TS-01-02", "title": "Criar DTO", "objective": "Estruturar dados", "acceptance": ["Email e senha"] },
+        { "id": "TS-01-03", "title": "Validar email", "objective": "Validar formato", "acceptance": ["Rejeitar inválidos"] },
+        { "id": "TS-01-04", "title": "Validar senha", "objective": "Segurança", "acceptance": ["Senha mínima"] },
+        { "id": "TS-01-05", "title": "Hash senha", "objective": "Criptografia", "acceptance": ["Não salvar texto puro"] },
+        { "id": "TS-01-06", "title": "Criar repository", "objective": "Persistência", "acceptance": ["Método save"] },
+        { "id": "TS-01-07", "title": "Verificar duplicidade", "objective": "Evitar duplicado", "acceptance": ["Erro se duplicado"] },
+        { "id": "TS-01-08", "title": "Salvar usuário", "objective": "Persistir", "acceptance": ["Usuário salvo"] },
+        { "id": "TS-01-09", "title": "Retornar 201", "objective": "Resposta HTTP", "acceptance": ["Status correto"] },
+        { "id": "TS-01-10", "title": "Input email UI", "objective": "Interface", "acceptance": ["Campo funcional"] },
+        { "id": "TS-01-11", "title": "Input senha UI", "objective": "Interface", "acceptance": ["Oculto"] },
+        { "id": "TS-01-12", "title": "Botão submit", "objective": "Ação", "acceptance": ["Disparar ação"] },
+        { "id": "TS-01-13", "title": "Estado formulário", "objective": "Gerenciar dados", "acceptance": ["Armazenar valores"] },
+        { "id": "TS-01-14", "title": "Chamada API", "objective": "Integração", "acceptance": ["Enviar request"] },
+        { "id": "TS-01-15", "title": "Tratar erro", "objective": "UX", "acceptance": ["Exibir erro"] },
+        { "id": "TS-01-16", "title": "Tratar sucesso", "objective": "UX", "acceptance": ["Exibir sucesso"] }
+      ]
+    },
+
+    {
+      "id": "US02",
+      "title": "Login",
+      "description": "Como usuário, quero fazer login.",
+      "acceptance": [
+        "Login válido",
+        "Erro inválido",
+        "Persistir sessão"
+      ],
+      "tasks": [
+        { "id": "TS-02-01", "title": "Criar rota login", "objective": "Endpoint", "acceptance": ["Responder"] },
+        { "id": "TS-02-02", "title": "Criar DTO login", "objective": "Entrada", "acceptance": ["Email/senha"] },
+        { "id": "TS-02-03", "title": "Buscar usuário", "objective": "Consulta", "acceptance": ["Encontrar"] },
+        { "id": "TS-02-04", "title": "Comparar senha", "objective": "Validação", "acceptance": ["Match correto"] },
+        { "id": "TS-02-05", "title": "Gerar JWT", "objective": "Auth", "acceptance": ["Token válido"] },
+        { "id": "TS-02-06", "title": "Expiração token", "objective": "Segurança", "acceptance": ["Expira"] },
+        { "id": "TS-02-07", "title": "Retornar token", "objective": "Resposta", "acceptance": ["JSON"] },
+        { "id": "TS-02-08", "title": "Input email", "objective": "UI", "acceptance": ["Funciona"] },
+        { "id": "TS-02-09", "title": "Input senha", "objective": "UI", "acceptance": ["Oculto"] },
+        { "id": "TS-02-10", "title": "Botão login", "objective": "Ação", "acceptance": ["Dispara"] },
+        { "id": "TS-02-11", "title": "Persistir token", "objective": "Sessão", "acceptance": ["Manter login"] },
+        { "id": "TS-02-12", "title": "Logout", "objective": "Encerrar", "acceptance": ["Remover token"] }
+      ]
+    },
+
+    {
+      "id": "US03",
+      "title": "Visualizar cursos",
+      "description": "Como usuário, quero ver cursos.",
+      "acceptance": ["Listar cursos"],
+      "tasks": [
+        { "id": "TS-03-01", "title": "Criar tabela cursos", "objective": "Modelar", "acceptance": ["Campos"] },
+        { "id": "TS-03-02", "title": "findAll", "objective": "Listar", "acceptance": ["Lista"] },
+        { "id": "TS-03-03", "title": "GET /courses", "objective": "API", "acceptance": ["Retorno"] },
+        { "id": "TS-03-04", "title": "Service cursos", "objective": "Regra", "acceptance": ["Encapsular"] },
+        { "id": "TS-03-05", "title": "UI lista", "objective": "Interface", "acceptance": ["Renderizar"] },
+        { "id": "TS-03-06", "title": "Card curso", "objective": "UI item", "acceptance": ["Mostrar dados"] },
+        { "id": "TS-03-07", "title": "Consumir API", "objective": "Integração", "acceptance": ["GET"] },
+        { "id": "TS-03-08", "title": "Loading", "objective": "UX", "acceptance": ["Mostrar"] },
+        { "id": "TS-03-09", "title": "Erro", "objective": "UX", "acceptance": ["Mostrar erro"] }
+      ]
+    },
+
+    {
+      "id": "US04",
+      "title": "Iniciar curso",
+      "description": "Como usuário, quero iniciar um curso.",
+      "acceptance": ["Criar progresso"],
+      "tasks": [
+        { "id": "TS-04-01", "title": "POST iniciar curso", "objective": "Endpoint", "acceptance": ["Responder"] },
+        { "id": "TS-04-02", "title": "Validar curso", "objective": "Validação", "acceptance": ["Erro se inválido"] },
+        { "id": "TS-04-03", "title": "DTO progresso", "objective": "Entrada", "acceptance": ["Campos"] },
+        { "id": "TS-04-04", "title": "Entidade progresso", "objective": "Modelar", "acceptance": ["Relacionamento"] },
+        { "id": "TS-04-05", "title": "Salvar progresso", "objective": "Persistir", "acceptance": ["Salvo"] },
+        { "id": "TS-04-06", "title": "Service progresso", "objective": "Regra", "acceptance": ["Encapsular"] },
+        { "id": "TS-04-07", "title": "Atualizar UI", "objective": "Frontend", "acceptance": ["Refletir"] },
+        { "id": "TS-04-08", "title": "Botão iniciar", "objective": "UI", "acceptance": ["Disparar"] }
+      ]
+    },
+
+    {
+      "id": "US05",
+      "title": "Visualizar trilha",
+      "tasks": [
+        { "id": "TS-05-01", "title": "Entidade módulo", "objective": "Modelar", "acceptance": ["Campos"] },
+        { "id": "TS-05-02", "title": "Entidade lição", "objective": "Modelar", "acceptance": ["Campos"] },
+        { "id": "TS-05-03", "title": "Relacionamento", "objective": "Modelar", "acceptance": ["1:N"] },
+        { "id": "TS-05-04", "title": "GET trilha", "objective": "API", "acceptance": ["Retornar"] },
+        { "id": "TS-05-05", "title": "Service trilha", "objective": "Regra", "acceptance": ["Montar"] },
+        { "id": "TS-05-06", "title": "UI trilha", "objective": "Interface", "acceptance": ["Renderizar"] },
+        { "id": "TS-05-07", "title": "Item lição", "objective": "UI", "acceptance": ["Listar"] },
+        { "id": "TS-05-08", "title": "Progresso visual", "objective": "UX", "acceptance": ["Destacar"] }
+      ]
+    },
+
+    {
+      "id": "US06",
+      "title": "Desbloqueio progressivo",
+      "tasks": [
+        { "id": "TS-06-01", "title": "Regra desbloqueio", "objective": "Definir", "acceptance": ["Sequência"] },
+        { "id": "TS-06-02", "title": "Validar backend", "objective": "Regra", "acceptance": ["Bloquear"] },
+        { "id": "TS-06-03", "title": "Atualizar status", "objective": "Persistir", "acceptance": ["Desbloquear"] },
+        { "id": "TS-06-04", "title": "UI bloqueio", "objective": "UX", "acceptance": ["Mostrar cadeado"] }
+      ]
+    },
+
+    {
+      "id": "US07",
+      "title": "Iniciar lição",
+      "tasks": [
+        { "id": "TS-07-01", "title": "GET lição", "objective": "API", "acceptance": ["Retornar"] },
+        { "id": "TS-07-02", "title": "Validar acesso", "objective": "Regra", "acceptance": ["Respeitar desbloqueio"] },
+        { "id": "TS-07-03", "title": "DTO lição", "objective": "Estrutura", "acceptance": ["Exercícios"] },
+        { "id": "TS-07-04", "title": "UI lição", "objective": "Interface", "acceptance": ["Renderizar"] },
+        { "id": "TS-07-05", "title": "Registrar início", "objective": "Persistir", "acceptance": ["Salvar"] }
+      ]
+    },
+
+    {
+      "id": "US08",
+      "title": "Responder exercício",
+      "tasks": [
+        { "id": "TS-08-01", "title": "Componente alternativa", "objective": "UI", "acceptance": ["Selecionar"] },
+        { "id": "TS-08-02", "title": "Estado resposta", "objective": "State", "acceptance": ["Armazenar"] },
+        { "id": "TS-08-03", "title": "Validar vazio", "objective": "Validação", "acceptance": ["Bloquear envio"] },
+        { "id": "TS-08-04", "title": "POST resposta", "objective": "API", "acceptance": ["Receber"] },
+        { "id": "TS-08-05", "title": "Salvar resposta", "objective": "Persistir", "acceptance": ["Banco"] }
+      ]
+    },
+
+    {
+      "id": "US09",
+      "title": "Feedback imediato",
+      "tasks": [
+        { "id": "TS-09-01", "title": "Validar resposta backend", "objective": "Verificar corretude", "acceptance": ["Retornar correto/incorreto"] },
+        { "id": "TS-09-02", "title": "Buscar explicação", "objective": "Retornar feedback", "acceptance": ["Texto explicativo"] },
+        { "id": "TS-09-03", "title": "Criar DTO feedback", "objective": "Estruturar resposta", "acceptance": ["Resultado + explicação"] },
+        { "id": "TS-09-04", "title": "Exibir feedback UI", "objective": "Interface", "acceptance": ["Mostrar imediatamente"] }
+      ]
+    },
+
+    {
+      "id": "US10",
+      "title": "Concluir lição",
+      "tasks": [
+        { "id": "TS-10-01", "title": "Calcular acertos", "objective": "Percentual", "acceptance": ["Cálculo correto"] },
+        { "id": "TS-10-02", "title": "Validar aprovação", "objective": "Regra mínima", "acceptance": ["Exigir mínimo"] },
+        { "id": "TS-10-03", "title": "Atualizar progresso", "objective": "Persistir", "acceptance": ["Marcar concluída"] },
+        { "id": "TS-10-04", "title": "Salvar conclusão", "objective": "Banco", "acceptance": ["Persistido"] },
+        { "id": "TS-10-05", "title": "Liberar próxima", "objective": "Fluxo", "acceptance": ["Atualizar status"] }
+      ]
+    },
+
+    {
+      "id": "US11",
+      "title": "Ganhar XP",
+      "tasks": [
+        { "id": "TS-11-01", "title": "Definir regra XP", "objective": "Lógica", "acceptance": ["Baseado desempenho"] },
+        { "id": "TS-11-02", "title": "Calcular XP", "objective": "Processar", "acceptance": ["Valor correto"] },
+        { "id": "TS-11-03", "title": "Atualizar XP usuário", "objective": "Persistir", "acceptance": ["Somar XP"] },
+        { "id": "TS-11-04", "title": "Salvar XP", "objective": "Banco", "acceptance": ["Persistido"] },
+        { "id": "TS-11-05", "title": "Exibir XP", "objective": "UI", "acceptance": ["Atualizar tela"] }
+      ]
+    },
+
+    {
+      "id": "US12",
+      "title": "Sistema de níveis",
+      "tasks": [
+        { "id": "TS-12-01", "title": "Criar tabela níveis", "objective": "Modelar", "acceptance": ["Thresholds definidos"] },
+        { "id": "TS-12-02", "title": "Calcular nível", "objective": "Regra", "acceptance": ["Atualização automática"] },
+        { "id": "TS-12-03", "title": "Atualizar nível usuário", "objective": "Persistir", "acceptance": ["Salvar nível"] },
+        { "id": "TS-12-04", "title": "Exibir nível", "objective": "UI", "acceptance": ["Mostrar progresso"] }
+      ]
+    },
+
+    {
+      "id": "US13",
+      "title": "Streak diário",
+      "tasks": [
+        { "id": "TS-13-01", "title": "Registrar atividade", "objective": "Persistir data", "acceptance": ["Salvar data"] },
+        { "id": "TS-13-02", "title": "Calcular streak", "objective": "Contagem", "acceptance": ["Dias consecutivos"] },
+        { "id": "TS-13-03", "title": "Resetar streak", "objective": "Regra", "acceptance": ["Reset após falha"] },
+        { "id": "TS-13-04", "title": "Exibir streak", "objective": "UI", "acceptance": ["Mostrar valor"] }
+      ]
+    },
+
+    {
+      "id": "US14",
+      "title": "Conquistas",
+      "tasks": [
+        { "id": "TS-14-01", "title": "Criar entidade conquista", "objective": "Modelar", "acceptance": ["Campos definidos"] },
+        { "id": "TS-14-02", "title": "Definir gatilhos", "objective": "Eventos", "acceptance": ["Mapeados"] },
+        { "id": "TS-14-03", "title": "Verificar conquistas", "objective": "Regra", "acceptance": ["Conceder automaticamente"] },
+        { "id": "TS-14-04", "title": "Persistir conquista", "objective": "Banco", "acceptance": ["Salvar"] },
+        { "id": "TS-14-05", "title": "Listar conquistas", "objective": "UI", "acceptance": ["Exibir medalhas"] },
+        { "id": "TS-14-06", "title": "Notificar usuário", "objective": "UX", "acceptance": ["Mostrar alerta"] }
+      ]
+    },
+
+    {
+      "id": "US15",
+      "title": "Visualizar progresso",
+      "tasks": [
+        { "id": "TS-15-01", "title": "GET progresso", "objective": "API", "acceptance": ["Retornar dados"] },
+        { "id": "TS-15-02", "title": "Service progresso", "objective": "Regra", "acceptance": ["Agregar dados"] },
+        { "id": "TS-15-03", "title": "UI progresso", "objective": "Interface", "acceptance": ["Mostrar métricas"] },
+        { "id": "TS-15-04", "title": "Atualização tempo real", "objective": "UX", "acceptance": ["Refletir mudanças"] }
+      ]
+    },
+
+    {
+      "id": "US16",
+      "title": "Histórico de lições",
+      "tasks": [
+        { "id": "TS-16-01", "title": "GET histórico", "objective": "API", "acceptance": ["Retornar lista"] },
+        { "id": "TS-16-02", "title": "Service histórico", "objective": "Regra", "acceptance": ["Buscar dados"] },
+        { "id": "TS-16-03", "title": "UI histórico", "objective": "Interface", "acceptance": ["Listar itens"] },
+        { "id": "TS-16-04", "title": "Exibir desempenho", "objective": "UX", "acceptance": ["Mostrar métricas"] }
+      ]
+    },
+
+    {
+      "id": "US17",
+      "title": "Identificar erros",
+      "tasks": [
+        { "id": "TS-17-01", "title": "Registrar erros", "objective": "Persistir", "acceptance": ["Salvar respostas erradas"] },
+        { "id": "TS-17-02", "title": "Calcular taxa erro", "objective": "Análise", "acceptance": ["Percentual correto"] },
+        { "id": "TS-17-03", "title": "Service análise", "objective": "Processar dados", "acceptance": ["Gerar insights"] }
+      ]
+    },
+
+    {
+      "id": "US18",
+      "title": "Sugerir revisão",
+      "tasks": [
+        { "id": "TS-18-01", "title": "Definir algoritmo", "objective": "Priorizar erros", "acceptance": ["Ordenar corretamente"] },
+        { "id": "TS-18-02", "title": "GET revisão", "objective": "API", "acceptance": ["Retornar sugestões"] },
+        { "id": "TS-18-03", "title": "UI sugestões", "objective": "Interface", "acceptance": ["Listar conteúdos"] }
+      ]
+    },
+
+    {
+      "id": "US19",
+      "title": "Exercícios de revisão",
+      "tasks": [
+        { "id": "TS-19-01", "title": "Gerar exercícios", "objective": "Base histórico", "acceptance": ["Lista válida"] },
+        { "id": "TS-19-02", "title": "Endpoint revisão", "objective": "API", "acceptance": ["Retornar exercícios"] },
+        { "id": "TS-19-03", "title": "UI revisão", "objective": "Interface", "acceptance": ["Permitir prática"] }
+      ]
+    },
+
+    {
+      "id": "US20",
+      "title": "Criar curso",
+      "tasks": [
+        { "id": "TS-20-01", "title": "POST curso", "objective": "API", "acceptance": ["Aceitar dados"] },
+        { "id": "TS-20-02", "title": "Validar curso", "objective": "Validação", "acceptance": ["Campos obrigatórios"] },
+        { "id": "TS-20-03", "title": "Persistir curso", "objective": "Banco", "acceptance": ["Salvar"] },
+        { "id": "TS-20-04", "title": "UI admin curso", "objective": "Interface", "acceptance": ["Criar curso"] }
+      ]
+    },
+
+    {
+      "id": "US21",
+      "title": "Criar módulo",
+      "tasks": [
+        { "id": "TS-21-01", "title": "POST módulo", "objective": "API", "acceptance": ["Aceitar dados"] },
+        { "id": "TS-21-02", "title": "Validar courseId", "objective": "Regra", "acceptance": ["Obrigatório"] },
+        { "id": "TS-21-03", "title": "Persistir módulo", "objective": "Banco", "acceptance": ["Salvar"] },
+        { "id": "TS-21-04", "title": "UI módulo", "objective": "Interface", "acceptance": ["Criar"] }
+      ]
+    },
+
+    {
+      "id": "US22",
+      "title": "Criar lição",
+      "tasks": [
+        { "id": "TS-22-01", "title": "POST lição", "objective": "API", "acceptance": ["Aceitar dados"] },
+        { "id": "TS-22-02", "title": "Validar moduleId", "objective": "Regra", "acceptance": ["Obrigatório"] },
+        { "id": "TS-22-03", "title": "Persistir lição", "objective": "Banco", "acceptance": ["Salvar"] },
+        { "id": "TS-22-04", "title": "UI lição", "objective": "Interface", "acceptance": ["Criar"] }
+      ]
+    },
+
+    {
+      "id": "US23",
+      "title": "Criar exercício",
+      "tasks": [
+        { "id": "TS-23-01", "title": "POST exercício", "objective": "API", "acceptance": ["Aceitar dados"] },
+        { "id": "TS-23-02", "title": "Validar alternativas", "objective": "Regra", "acceptance": ["Uma correta"] },
+        { "id": "TS-23-03", "title": "Persistir exercício", "objective": "Banco", "acceptance": ["Salvar"] },
+        { "id": "TS-23-04", "title": "UI exercício", "objective": "Interface", "acceptance": ["Cadastrar"] }
+      ]
+    },
+
+    {
+      "id": "US24",
+      "title": "Lembrete diário",
+      "tasks": [
+        { "id": "TS-24-01", "title": "Service notificação", "objective": "Enviar push", "acceptance": ["Enviar"] },
+        { "id": "TS-24-02", "title": "Agendar envio", "objective": "Scheduler", "acceptance": ["Respeitar horário"] },
+        { "id": "TS-24-03", "title": "Integrar app", "objective": "Receber push", "acceptance": ["Receber notificação"] }
+      ]
+    },
+
+    {
+      "id": "US25",
+      "title": "Configurar notificações",
+      "tasks": [
+        { "id": "TS-25-01", "title": "Endpoint preferências", "objective": "Salvar config", "acceptance": ["Persistir"] },
+        { "id": "TS-25-02", "title": "DTO preferências", "objective": "Estruturar", "acceptance": ["Campos definidos"] },
+        { "id": "TS-25-03", "title": "Salvar configurações", "objective": "Banco", "acceptance": ["Persistir"] },
+        { "id": "TS-25-04", "title": "UI configurações", "objective": "Interface", "acceptance": ["Editar"] },
+        { "id": "TS-25-05", "title": "Aplicar preferências", "objective": "Regra", "acceptance": ["Respeitar config"] }
+      ]
+    }
+  ]
+
+}
