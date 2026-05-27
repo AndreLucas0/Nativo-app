@@ -1,3 +1,108 @@
+# Root .gitignore for Nativo-App Repository
+
+### OS Files ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+### IDE - VS Code ###
+# Uncomment if you want to ignore personal VS Code settings
+# .vscode/
+# Keep .vscode/ committed if it contains team-shared settings
+
+### IDE - JetBrains (IntelliJ, WebStorm, etc.) ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Environment Variables & Secrets ###
+.env
+.env.local
+.env.*.local
+*.env
+.secrets
+secrets/
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+
+### Logs ###
+*.log
+logs/
+log/
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.cache
+*.bak
+*.backup
+*.old
+*~
+*.swp
+*.swo
+
+### Node.js (if frontend is added later) ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+### Python (if scripts are added) ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+### Docker ###
+docker-compose.override.yml
+.dockerignore
+
+### Build Artifacts (general) ###
+dist/
+build/
+out/
+
+### Coverage Reports ###
+coverage/
+*.cover
+.coverage
+htmlcov/
+
+### Database Files ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Uploads & Runtime Data ###
+uploads/
+temp/
+cache/
+
+### Documentation Generated ###
+docs/generated/
+docs/api/generated/
+
+### Kiro ###
+# Ignore all Kiro files
+
+
+### Application Specific ###
+# Add any project-specific files to ignore here
 # dependencies
 node_modules/
 
