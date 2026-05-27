@@ -1,0 +1,19 @@
+import { User } from './user';
+
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+export interface SignupDTO {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: User;
+}

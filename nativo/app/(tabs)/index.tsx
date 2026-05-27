@@ -10,9 +10,9 @@ const BG = "#131f24";
 
 // Nível 2 invertido → cria efeito cobra/snake entre as seções
 const posicoesPorNivel = [
-  ["left",  "center", "right"] as const,   // Nível 1: →
-  ["right", "center", "left"]  as const,   // Nível 2: ← (invertido)
-  ["left",  "center", "right"] as const,   // Nível 3: →
+  ["left", "center", "right"] as const,
+  ["right", "center", "left"] as const,
+  ["left", "center", "right"] as const,
 ];
 
 const niveis = [
@@ -71,12 +71,13 @@ export default function Index() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-
       {/* ── HEADER ── */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View style={styles.logo}>
-            <Text style={{ fontSize: 22, fontWeight: "bold", color: "#000" }}>N</Text>
+            <Text style={{ fontSize: 22, fontWeight: "bold", color: "#000" }}>
+              N
+            </Text>
           </View>
           <Text style={styles.logoText}>Nativo</Text>
         </View>
@@ -86,10 +87,12 @@ export default function Index() {
             <Flame size={20} color="#FF7A00" />
             <Text style={[styles.statText, { color: "#FF7A00" }]}>1</Text>
           </View>
+
           <View style={styles.statItem}>
             <Zap size={20} color="#FFD60A" fill="#FFD60A" />
             <Text style={[styles.statText, { color: "#FFD60A" }]}>18</Text>
           </View>
+
           <View style={styles.statItem}>
             <Heart size={20} color="#FF4D6D" fill="#FF4D6D" />
             <Text style={[styles.statText, { color: "#FF4D6D" }]}>5</Text>
@@ -105,24 +108,43 @@ export default function Index() {
           end={{ x: 1, y: 1 }}
           style={[styles.sessaoCard, { borderColor: sessaoAtual.cor + "55" }]}
         >
-          {/* Label */}
           <View style={styles.sessaoLabelRow}>
-            <Bookmark size={11} color={sessaoAtual.cor} fill={sessaoAtual.cor} />
-            <Text style={[styles.sessaoLabelText, { color: sessaoAtual.cor }]}>
+            <Bookmark
+              size={11}
+              color={sessaoAtual.cor}
+              fill={sessaoAtual.cor}
+            />
+
+            <Text
+              style={[
+                styles.sessaoLabelText,
+                { color: sessaoAtual.cor },
+              ]}
+            >
               NÍVEL {sessaoAtual.id} · ATIVIDADE {atividadeAtual.id}
             </Text>
           </View>
 
-          {/* Título + botão */}
           <View style={styles.sessaoContent}>
             <View style={styles.sessaoLeft}>
-              <Text style={styles.sessaoTitulo}>{atividadeAtual.titulo}</Text>
-              <Text style={styles.sessaoSubtitulo}>{sessaoAtual.titulo}</Text>
+              <Text style={styles.sessaoTitulo}>
+                {atividadeAtual.titulo}
+              </Text>
+
+              <Text style={styles.sessaoSubtitulo}>
+                {sessaoAtual.titulo}
+              </Text>
             </View>
+
             <TouchableOpacity
-              style={[styles.iniciarBtn, { backgroundColor: sessaoAtual.cor }]}
+              style={[
+                styles.iniciarBtn,
+                { backgroundColor: sessaoAtual.cor },
+              ]}
               onPress={() =>
-                router.push(`/atividade/${sessaoAtual.id}/${atividadeAtual.id}`)
+                router.push(
+                  `/atividade/${sessaoAtual.id}/${atividadeAtual.id}`
+                )
               }
             >
               <Text style={styles.iniciarText}>INICIAR</Text>
@@ -165,6 +187,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BG,
   },
+
   scrollContent: {
     paddingBottom: 20,
   },
@@ -180,6 +203,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#1e2f38",
   },
+
   logo: {
     width: 38,
     height: 38,
@@ -189,21 +213,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
+
   logoText: {
     color: "#FFF",
     fontSize: 26,
     fontWeight: "bold",
   },
+
   statsRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
   },
+
   statItem: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
+
   statText: {
     fontWeight: "bold",
     fontSize: 15,
@@ -215,48 +243,57 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 4,
   },
+
   sessaoCard: {
     borderRadius: 18,
     borderWidth: 1.5,
     paddingHorizontal: 18,
     paddingVertical: 16,
   },
+
   sessaoLabelRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     marginBottom: 10,
   },
+
   sessaoLabelText: {
     fontSize: 11,
     fontWeight: "bold",
     letterSpacing: 1,
   },
+
   sessaoContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
   },
+
   sessaoLeft: {
     flex: 1,
     gap: 3,
   },
+
   sessaoTitulo: {
     color: "#fff",
     fontSize: 17,
     fontWeight: "bold",
     letterSpacing: 0.5,
   },
+
   sessaoSubtitulo: {
     color: "#8899a0",
     fontSize: 12,
   },
+
   iniciarBtn: {
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 20,
   },
+
   iniciarText: {
     color: "#000",
     fontWeight: "bold",
