@@ -1,5 +1,8 @@
 package com.nativo.api.application.auth;
 
+import com.nativo.api.domain.course.CourseRepository;
+import com.nativo.api.domain.progress.UserProgress;
+import com.nativo.api.domain.progress.UserProgressRepository;
 import com.nativo.api.domain.user.User;
 import com.nativo.api.domain.user.UserRepository;
 import com.nativo.api.infrastructure.exception.ConflictException;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AuthService {
 
+    private static final String DEFAULT_COURSE_SLUG = "expo-react-native";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final PasswordResetTokenStore passwordResetTokenStore;
+    private final CourseRepository courseRepository;
+    private final UserProgressRepository userProgressRepository;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -36,7 +44,23 @@ public class AuthService {
                 .build();
 
         user = userRepository.save(user);
+        enrollInDefaultCourse(user);
         return buildAuthResponse(user);
+    }
+
+    private void enrollInDefaultCourse(User user) {
+        courseRepository.findBySlug(DEFAULT_COURSE_SLUG).ifPresentOrElse(
+                course -> {
+                    var progress = UserProgress.builder()
+                            .user(user)
+                            .course(course)
+                            .startedAt(Instant.now())
+                            .build();
+                    userProgressRepository.save(progress);
+                    log.info("Usuário {} matriculado automaticamente em '{}'", user.getId(), DEFAULT_COURSE_SLUG);
+                },
+                () -> log.warn("Curso padrão '{}' não encontrado — matrícula automática ignorada.", DEFAULT_COURSE_SLUG)
+        );
     }
 
     @Transactional(readOnly = true)

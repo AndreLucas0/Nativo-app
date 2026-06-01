@@ -9,7 +9,8 @@ import java.util.UUID;
 public record DashboardResponse(
         UserStats userStats,
         List<CourseProgressSummary> activeCourses,
-        List<RecentCompletion> recentCompletions
+        List<RecentCompletion> recentCompletions,
+        List<UUID> passedLessonIds
 ) {
     public record UserStats(
             int totalXp,
@@ -34,6 +35,7 @@ public record DashboardResponse(
             UUID courseId,
             String courseTitle,
             int score,
+            boolean passed,
             int xpEarned,
             Instant completedAt
     ) {}

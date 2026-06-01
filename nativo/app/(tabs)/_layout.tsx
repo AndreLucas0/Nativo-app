@@ -2,7 +2,8 @@ import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
 import { House } from 'lucide-react-native';
 import { Crown } from 'lucide-react-native';
-import { Medal } from 'lucide-react-native'
+import { Medal } from 'lucide-react-native';
+import { User } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -18,6 +19,7 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: "Aprender", headerShown: false, tabBarIcon: ({ color }) => <House size={24} color={color} /> }} />
       <Tabs.Screen name="ranking" options={{ title: "Ranking", headerShown: false, tabBarIcon: ({ color }) => <Crown size={24} color={color} /> }} />
       <Tabs.Screen name="premios" options={{ title: "Prêmios", headerShown: false, tabBarIcon: ({ color }) => <Medal size={24} color={color} /> }} />
+      <Tabs.Screen name="questao" options={{ title: "Perfil", headerShown: false, tabBarIcon: ({ color }) => <User size={24} color={color} /> }} />
 
     </Tabs>
   );

@@ -62,7 +62,7 @@ public class LessonService {
                 ))
                 .toList();
 
-        boolean alreadyCompleted = lessonCompletionRepository.existsByUserIdAndLessonId(userId, lessonId);
+        boolean alreadyCompleted = lessonCompletionRepository.existsPassedByUserIdAndLessonId(userId, lessonId);
 
         return new LessonContentResponse(
                 lesson.getId(),
@@ -84,7 +84,7 @@ public class LessonService {
         var progress = userProgressRepository.findByUserIdAndCourseId(userId, lesson.getCourse().getId())
                 .orElseThrow(() -> new ForbiddenException("Você não está matriculado neste curso."));
 
-        if (lessonCompletionRepository.existsByUserIdAndLessonId(userId, lessonId)) {
+        if (lessonCompletionRepository.existsPassedByUserIdAndLessonId(userId, lessonId)) {
             throw new ConflictException("Lição já concluída.");
         }
 
@@ -181,7 +181,7 @@ public class LessonService {
         if (position <= 0) return;
 
         Lesson previousLesson = moduleLessons.get(position - 1);
-        if (!lessonCompletionRepository.existsByUserIdAndLessonId(userId, previousLesson.getId())) {
+        if (!lessonCompletionRepository.existsPassedByUserIdAndLessonId(userId, previousLesson.getId())) {
             throw new ForbiddenException("Conclua a lição anterior antes de prosseguir.");
         }
     }

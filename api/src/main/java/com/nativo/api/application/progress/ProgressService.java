@@ -102,12 +102,15 @@ public class ProgressService {
                         c.getCourse().getId(),
                         c.getCourse().getTitle(),
                         c.getScore(),
+                        c.getScore() >= c.getLesson().getMinimumScore(),
                         c.getXpEarned(),
                         c.getCompletedAt()
                 ))
                 .toList();
 
-        return new DashboardResponse(userStats, activeCourses, recentCompletions);
+        var passedLessonIds = lessonCompletionRepository.findPassedLessonIdsByUserId(userId);
+
+        return new DashboardResponse(userStats, activeCourses, recentCompletions, passedLessonIds);
     }
 
     @Transactional
