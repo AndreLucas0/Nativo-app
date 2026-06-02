@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "allowed.origins",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Comma-separated list of CORS allowed origins. Overridden by ALLOWED_ORIGINS environment variable in production."
+    }
+  ]
+}

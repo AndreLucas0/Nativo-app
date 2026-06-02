@@ -22,19 +22,6 @@ $RECYCLE.BIN/
 *.iml
 *.ipr
 
-### Environment Variables & Secrets ###
-.env
-.env.local
-.env.*.local
-*.env
-.secrets
-secrets/
-*.key
-*.pem
-*.p12
-*.jks
-*.keystore
-
 ### Logs ###
 *.log
 logs/
@@ -64,9 +51,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-venv/
-env/
-ENV/
 
 ### Docker ###
 docker-compose.override.yml

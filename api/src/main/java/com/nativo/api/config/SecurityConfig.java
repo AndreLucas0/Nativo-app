@@ -3,6 +3,7 @@ package com.nativo.api.config;
 import com.nativo.api.infrastructure.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,6 +27,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${allowed.origins}")
+    private List<String> allowedOrigins;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,13 +56,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Origens permitidas: Expo web (8081), Expo Go web (19006), e dev genérico (3000)
-        config.setAllowedOrigins(List.of(
-                "http://localhost:8081",
-                "http://localhost:19006",
-                "http://localhost:3000",
-                "http://10.0.2.2:8081"
-        ));
+        config.setAllowedOrigins(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

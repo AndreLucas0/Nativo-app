@@ -3,11 +3,12 @@ import { Platform } from 'react-native';
 import { authBus } from '../utils/authBus';
 
 // ── Configuração de rede ──────────────────────────────────────────────────────
-// iOS físico (Expo Go): troque pelo IP da sua máquina na rede local.
-// Para descobrir: Windows → ipconfig | Mac → ifconfig | busque "IPv4"
-const LOCAL_MACHINE_IP = '192.168.1.100'; // <-- ALTERE AQUI
+// Produção (EC2): defina EXPO_PUBLIC_API_URL=http://<EC2_IP>:8080 em nativo/.env
+// Dev iOS físico: defina LOCAL_MACHINE_IP com seu IP local (ipconfig/ifconfig)
+const LOCAL_MACHINE_IP = '192.168.1.100'; // <-- ALTERE AQUI (dev local apenas)
 
 function resolveBaseUrl() {
+  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
   if (Platform.OS === 'web') return 'http://localhost:8080';
   if (Platform.OS === 'android') return 'http://10.0.2.2:8080'; // emulador Android
   return `http://${LOCAL_MACHINE_IP}:8080`; // iOS físico via Expo Go
