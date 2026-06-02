@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,6 +53,26 @@ public class UserService {
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RankingEntryResponse> getRanking(UUID currentUserId) {
+        var users = userRepository.findAllByOrderByTotalXpDesc();
+        List<RankingEntryResponse> result = new ArrayList<>(users.size());
+        for (int i = 0; i < users.size(); i++) {
+            var u = users.get(i);
+            result.add(new RankingEntryResponse(
+                    i + 1,
+                    u.getId(),
+                    u.getName(),
+                    u.getProfileImageUrl(),
+                    u.getTotalXp(),
+                    u.getCurrentLevel(),
+                    u.getCurrentStreak(),
+                    u.getId().equals(currentUserId)
+            ));
+        }
+        return result;
     }
 
     private UserProfileResponse toProfileResponse(User user) {

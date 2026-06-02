@@ -275,6 +275,17 @@ export type ChangePasswordRequest = {
   newPassword: string;
 };
 
+export type RankingEntry = {
+  position: number;
+  userId: string;
+  name: string;
+  profileImageUrl: string | null;
+  totalXp: number;
+  currentLevel: number;
+  currentStreak: number;
+  isCurrentUser: boolean;
+};
+
 export type LessonCompleteResponse = {
   passed: boolean;
   score: number;

@@ -1,6 +1,7 @@
 package com.nativo.api.web;
 
 import com.nativo.api.application.user.ChangePasswordRequest;
+import com.nativo.api.application.user.RankingEntryResponse;
 import com.nativo.api.application.user.UpdateProfileRequest;
 import com.nativo.api.application.user.UserProfileResponse;
 import com.nativo.api.application.user.UserService;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,6 +41,14 @@ public class UserController {
             @RequestBody @Valid UpdateProfileRequest request) {
         UUID userId = UUID.fromString(userDetails.getUsername());
         return ResponseEntity.ok(userService.updateProfile(userId, request));
+    }
+
+    @GetMapping("/ranking")
+    @Operation(summary = "Retorna o ranking global de usuários ordenado por XP")
+    public ResponseEntity<List<RankingEntryResponse>> getRanking(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        UUID userId = UUID.fromString(userDetails.getUsername());
+        return ResponseEntity.ok(userService.getRanking(userId));
     }
 
     @PutMapping("/me/password")
