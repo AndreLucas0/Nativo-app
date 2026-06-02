@@ -1,5 +1,7 @@
 package com.nativo.api.application.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public record RankingEntryResponse(
@@ -10,5 +12,5 @@ public record RankingEntryResponse(
         int totalXp,
         int currentLevel,
         int currentStreak,
-        boolean isCurrentUser
+        @JsonProperty("isCurrentUser") boolean isCurrentUser
 ) {}
