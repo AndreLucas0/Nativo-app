@@ -1,3 +1,7 @@
+// ARQUIVO: app/(tabs)/perfil.tsx
+// Tela de Perfil: exibe avatar, nome, e-mail e estatísticas do usuário.
+// Permite editar nome/foto (modal), alterar senha (modal) e fazer logout.
+
 import { useCallback, useState } from "react";
 import {
   ScrollView, StyleSheet, Text, View, ActivityIndicator,
@@ -9,11 +13,13 @@ import { api, UserProfileResponse, ApiError } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { useLives } from "../../context/LivesContext";
 
-const PRIMARY = "#4CAF50";
-const BG = "#111111";
-const CARD_BG = "#1E1E1E";
+// Constantes de cores reutilizadas nos estilos
+const PRIMARY   = "#4CAF50";
+const BG        = "#111111";
+const CARD_BG   = "#1E1E1E";
 const HEADER_BG = "#1C1C1C";
 
+// Gera as iniciais do nome (máximo 2 letras) para o avatar padrão
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -26,22 +32,26 @@ export default function PerfilScreen() {
   const { logout } = useAuth();
   const { lives } = useLives();
 
-  const [profile, setProfile] = useState<UserProfileResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Estado do perfil carregado da API
+  const [profile, setProfile]   = useState<UserProfileResponse | null>(null);
+  const [loading, setLoading]   = useState(true);
   const [loadError, setLoadError] = useState(false);
 
-  const [editVisible, setEditVisible] = useState(false);
-  const [editName, setEditName] = useState("");
+  // Estados do modal de edição de perfil
+  const [editVisible, setEditVisible]   = useState(false);
+  const [editName, setEditName]         = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
-  const [editSaving, setEditSaving] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
+  const [editSaving, setEditSaving]     = useState(false);
+  const [editError, setEditError]       = useState<string | null>(null);
 
+  // Estados do modal de alteração de senha
   const [pwVisible, setPwVisible] = useState(false);
   const [currentPw, setCurrentPw] = useState("");
-  const [newPw, setNewPw] = useState("");
-  const [pwSaving, setPwSaving] = useState(false);
-  const [pwError, setPwError] = useState<string | null>(null);
+  const [newPw, setNewPw]         = useState("");
+  const [pwSaving, setPwSaving]   = useState(false);
+  const [pwError, setPwError]     = useState<string | null>(null);
 
+  // Recarrega o perfil toda vez que a aba recebe foco
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
@@ -54,6 +64,7 @@ export default function PerfilScreen() {
     }, [])
   );
 
+  // Abre o modal de edição preenchendo os campos com os dados atuais
   function openEdit() {
     if (!profile) return;
     setEditName(profile.name);
@@ -62,6 +73,7 @@ export default function PerfilScreen() {
     setEditVisible(true);
   }
 
+  // Salva as alterações de perfil (nome e/ou URL da foto) via PUT /api/users/me
   async function saveProfile() {
     if (!editName.trim() || editName.trim().length < 2) {
       setEditError("Nome deve ter pelo menos 2 caracteres.");
@@ -75,7 +87,7 @@ export default function PerfilScreen() {
       };
       if (editImageUrl.trim()) body.profileImageUrl = editImageUrl.trim();
       const updated = await api.put<UserProfileResponse>("/api/users/me", body);
-      setProfile(updated);
+      setProfile(updated); // atualiza o estado local com o perfil retornado
       setEditVisible(false);
     } catch (e) {
       setEditError(
@@ -86,6 +98,7 @@ export default function PerfilScreen() {
     }
   }
 
+  // Abre o modal de alteração de senha limpando os campos anteriores
   function openChangePw() {
     setCurrentPw("");
     setNewPw("");
@@ -93,6 +106,7 @@ export default function PerfilScreen() {
     setPwVisible(true);
   }
 
+  // Envia a troca de senha via PUT /api/users/me/password
   async function savePassword() {
     if (!currentPw) {
       setPwError("Informe a senha atual.");
@@ -120,11 +134,12 @@ export default function PerfilScreen() {
     }
   }
 
-  const xp = profile?.totalXp ?? 0;
+  const xp     = profile?.totalXp ?? 0;
   const streak = profile?.currentStreak ?? 0;
 
   return (
     <View style={styles.screen}>
+      {/* Header com logo e estatísticas */}
       <AppHeader streak={streak} xp={xp} lives={lives} loading={loading} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -140,13 +155,10 @@ export default function PerfilScreen() {
           </View>
         ) : (
           <>
-            {/* ── Identidade ── */}
+            {/* ── Card de identidade: avatar + nome + e-mail ── */}
             <View style={styles.identityCard}>
               {profile?.profileImageUrl ? (
-                <Image
-                  source={{ uri: profile.profileImageUrl }}
-                  style={styles.avatarImage}
-                />
+                <Image source={{ uri: profile.profileImageUrl }} style={styles.avatarImage} />
               ) : (
                 <View style={styles.avatarCircle}>
                   <Text style={styles.avatarInitials}>
@@ -158,28 +170,31 @@ export default function PerfilScreen() {
               <Text style={styles.profileEmail}>{profile?.email ?? "—"}</Text>
             </View>
 
-            {/* ── Grid de estatísticas ── */}
+            {/* ── Grid de 4 estatísticas: XP, Nível, Streak atual, Recorde de streak ── */}
             <View style={styles.statsGrid}>
-              <StatCard label="XP Total"  value={String(xp)}  icon="⚡" color="#FFD700" />
-              <StatCard label="Nível"     value={String(profile?.currentLevel ?? 0)} icon="🏆" color={PRIMARY} />
-              <StatCard label="Streak"    value={`${streak}d`} icon="🔥" color="#FF6B00" />
-              <StatCard label="Recorde"   value={`${profile?.longestStreak ?? 0}d`} icon="📈" color="#818CF8" />
+              <StatCard label="XP Total" value={String(xp)}                              icon="⚡" color="#FFD700" />
+              <StatCard label="Nível"    value={String(profile?.currentLevel ?? 0)}      icon="🏆" color={PRIMARY} />
+              <StatCard label="Streak"   value={`${streak}d`}                            icon="🔥" color="#FF6B00" />
+              <StatCard label="Recorde"  value={`${profile?.longestStreak ?? 0}d`}       icon="📈" color="#818CF8" />
             </View>
 
-            {/* ── Ações ── */}
+            {/* ── Seção de ações da conta ── */}
             <View style={styles.actionsSection}>
               <Text style={styles.sectionLabel}>CONTA</Text>
 
-              <ActionRow icon="edit"   label="Editar perfil"  onPress={openEdit} />
-              <ActionRow icon="lock"   label="Alterar senha"  onPress={openChangePw} />
-              <ActionRow icon="logout" label="Sair"           onPress={logout} danger />
+              {/* Botão para abrir o modal de edição de perfil */}
+              <ActionRow icon="edit"   label="Editar perfil" onPress={openEdit} />
+              {/* Botão para abrir o modal de alteração de senha */}
+              <ActionRow icon="lock"   label="Alterar senha" onPress={openChangePw} />
+              {/* Botão de logout (vermelho = ação destrutiva) */}
+              <ActionRow icon="logout" label="Sair"          onPress={logout} danger />
             </View>
           </>
         )}
 
       </ScrollView>
 
-      {/* ── Modal: editar perfil ── */}
+      {/* ── Modal de edição de perfil (slide de baixo) ── */}
       <Modal visible={editVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
@@ -207,35 +222,21 @@ export default function PerfilScreen() {
               keyboardType="url"
             />
 
-            {editError ? (
-              <Text style={styles.errorText}>{editError}</Text>
-            ) : null}
+            {editError ? <Text style={styles.errorText}>{editError}</Text> : null}
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => setEditVisible(false)}
-                disabled={editSaving}
-              >
+              <TouchableOpacity style={styles.cancelBtn} onPress={() => setEditVisible(false)} disabled={editSaving}>
                 <Text style={styles.cancelBtnText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, editSaving && styles.btnDisabled]}
-                onPress={saveProfile}
-                disabled={editSaving}
-              >
-                {editSaving ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text style={styles.saveBtnText}>Salvar</Text>
-                )}
+              <TouchableOpacity style={[styles.saveBtn, editSaving && styles.btnDisabled]} onPress={saveProfile} disabled={editSaving}>
+                {editSaving ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.saveBtnText}>Salvar</Text>}
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* ── Modal: alterar senha ── */}
+      {/* ── Modal de alteração de senha (slide de baixo) ── */}
       <Modal visible={pwVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
@@ -262,28 +263,14 @@ export default function PerfilScreen() {
               secureTextEntry
             />
 
-            {pwError ? (
-              <Text style={styles.errorText}>{pwError}</Text>
-            ) : null}
+            {pwError ? <Text style={styles.errorText}>{pwError}</Text> : null}
 
             <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => setPwVisible(false)}
-                disabled={pwSaving}
-              >
+              <TouchableOpacity style={styles.cancelBtn} onPress={() => setPwVisible(false)} disabled={pwSaving}>
                 <Text style={styles.cancelBtnText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, pwSaving && styles.btnDisabled]}
-                onPress={savePassword}
-                disabled={pwSaving}
-              >
-                {pwSaving ? (
-                  <ActivityIndicator color="#fff" size="small" />
-                ) : (
-                  <Text style={styles.saveBtnText}>Confirmar</Text>
-                )}
+              <TouchableOpacity style={[styles.saveBtn, pwSaving && styles.btnDisabled]} onPress={savePassword} disabled={pwSaving}>
+                {pwSaving ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.saveBtnText}>Confirmar</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -293,17 +280,12 @@ export default function PerfilScreen() {
   );
 }
 
-function AppHeader({
-  streak, xp, lives, loading,
-}: {
-  streak: number; xp: number; lives: number; loading: boolean;
-}) {
+// Header reutilizável com logo e estatísticas do usuário
+function AppHeader({ streak, xp, lives, loading }: { streak: number; xp: number; lives: number; loading: boolean }) {
   return (
     <View style={styles.appHeader}>
       <View style={styles.appHeaderLogo}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>N</Text>
-        </View>
+        <View style={styles.logoCircle}><Text style={styles.logoText}>N</Text></View>
         <Text style={styles.logoName}>Nativo</Text>
       </View>
       <View style={styles.appHeaderStats}>
@@ -321,6 +303,7 @@ function AppHeader({
   );
 }
 
+// Ícone + valor numérico colorido (streak, XP ou vidas)
 function StatItem({ icon, value, color }: { icon: string; value: number; color: string }) {
   return (
     <View style={styles.statItem}>
@@ -330,11 +313,8 @@ function StatItem({ icon, value, color }: { icon: string; value: number; color: 
   );
 }
 
-function StatCard({
-  label, value, icon, color,
-}: {
-  label: string; value: string; icon: string; color: string;
-}) {
+// Card de estatística individual (usado no grid 2×2)
+function StatCard({ label, value, icon, color }: { label: string; value: string; icon: string; color: string }) {
   return (
     <View style={styles.statCard}>
       <Text style={styles.statCardIcon}>{icon}</Text>
@@ -344,19 +324,15 @@ function StatCard({
   );
 }
 
-function ActionRow({
-  icon, label, onPress, danger,
-}: {
-  icon: string; label: string; onPress: () => void; danger?: boolean;
-}) {
+// Linha de ação clicável (editar, alterar senha, sair)
+// danger=true aplica estilo vermelho para indicar ação destrutiva
+function ActionRow({ icon, label, onPress, danger }: { icon: string; label: string; onPress: () => void; danger?: boolean }) {
   return (
     <TouchableOpacity style={styles.actionRow} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.actionIcon, danger && styles.actionIconDanger]}>
         <MaterialIcons name={icon as any} size={20} color={danger ? "#EF4444" : PRIMARY} />
       </View>
-      <Text style={[styles.actionLabel, danger && styles.actionLabelDanger]}>
-        {label}
-      </Text>
+      <Text style={[styles.actionLabel, danger && styles.actionLabelDanger]}>{label}</Text>
       <MaterialIcons name="chevron-right" size={20} color="#555" />
     </TouchableOpacity>
   );
@@ -369,7 +345,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", justifyContent: "space-between", alignItems: "center",
     paddingHorizontal: 16, paddingTop: 48, paddingBottom: 12, backgroundColor: HEADER_BG,
   },
-  appHeaderLogo: { flexDirection: "row", alignItems: "center", gap: 8 },
+  appHeaderLogo:  { flexDirection: "row", alignItems: "center", gap: 8 },
   logoCircle: {
     width: 32, height: 32, borderRadius: 8, backgroundColor: PRIMARY,
     justifyContent: "center", alignItems: "center",
@@ -381,7 +357,7 @@ const styles = StyleSheet.create({
   statIcon:       { fontSize: 16 },
   statValue:      { fontWeight: "700", fontSize: 14 },
 
-  centered: { padding: 60, alignItems: "center" },
+  centered:   { padding: 60, alignItems: "center" },
   errorEmoji: { fontSize: 48, marginBottom: 12 },
   errorMsg:   { color: "#888", fontSize: 14, textAlign: "center" },
 
@@ -417,17 +393,12 @@ const styles = StyleSheet.create({
     flexDirection: "row", alignItems: "center", backgroundColor: CARD_BG,
     borderRadius: 12, padding: 14, marginBottom: 6, gap: 12,
   },
-  actionIcon: {
-    width: 38, height: 38, borderRadius: 10, backgroundColor: "#1A2E1A",
-    justifyContent: "center", alignItems: "center",
-  },
+  actionIcon:       { width: 38, height: 38, borderRadius: 10, backgroundColor: "#1A2E1A", justifyContent: "center", alignItems: "center" },
   actionIconDanger: { backgroundColor: "#2E1A1A" },
   actionLabel:      { flex: 1, color: "#fff", fontSize: 15, fontWeight: "600" },
   actionLabelDanger:{ color: "#EF4444" },
 
-  modalOverlay: {
-    flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "flex-end",
-  },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "flex-end" },
   modalCard: {
     backgroundColor: "#1C1C1C", borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 24, paddingBottom: 40,
@@ -436,20 +407,13 @@ const styles = StyleSheet.create({
   inputLabel:   { color: "#888", fontSize: 12, fontWeight: "700", marginBottom: 6 },
   input: {
     backgroundColor: "#2A2A2A", color: "#fff", borderRadius: 12,
-    padding: 14, fontSize: 15, marginBottom: 14,
-    borderWidth: 1, borderColor: "#3A3A3A",
+    padding: 14, fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: "#3A3A3A",
   },
-  errorText: { color: "#EF4444", fontSize: 13, marginBottom: 12 },
+  errorText:    { color: "#EF4444", fontSize: 13, marginBottom: 12 },
   modalActions: { flexDirection: "row", gap: 10, marginTop: 4 },
-  cancelBtn: {
-    flex: 1, borderRadius: 12, padding: 14,
-    borderWidth: 1, borderColor: "#3A3A3A", alignItems: "center",
-  },
-  cancelBtnText: { color: "#888", fontWeight: "700", fontSize: 15 },
-  saveBtn: {
-    flex: 1, borderRadius: 12, padding: 14,
-    backgroundColor: PRIMARY, alignItems: "center",
-  },
-  saveBtnText: { color: "#fff", fontWeight: "800", fontSize: 15 },
-  btnDisabled: { opacity: 0.6 },
+  cancelBtn:    { flex: 1, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "#3A3A3A", alignItems: "center" },
+  cancelBtnText:{ color: "#888", fontWeight: "700", fontSize: 15 },
+  saveBtn:      { flex: 1, borderRadius: 12, padding: 14, backgroundColor: PRIMARY, alignItems: "center" },
+  saveBtnText:  { color: "#fff", fontWeight: "800", fontSize: 15 },
+  btnDisabled:  { opacity: 0.6 },
 });

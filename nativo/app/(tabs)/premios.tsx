@@ -1,3 +1,7 @@
+// ARQUIVO: app/(tabs)/premios.tsx
+// Tela de Prêmios: exibe o mapa completo das ligas (Bronze → Lendário)
+// com o prêmio de cada liga e indica qual o usuário já desbloqueou.
+
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -5,6 +9,7 @@ import { useFocusEffect } from "expo-router";
 import { api, DashboardResponse } from "../../services/api";
 import { useLives } from "../../context/LivesContext";
 
+// Lista estática de todas as ligas: nome, emoji, cor, prêmio e XP mínimo exigido
 const LEAGUES = [
   { name: "Liga Bronze",    emoji: "🥉", color: "#CD7F32", bg: "#2A1F10", border: "#CD7F32", reward: "10 💎 Gemas",                 xp: 0    },
   { name: "Liga Prata",     emoji: "🥈", color: "#C0C0C0", bg: "#1E1E1E", border: "#2A2A2A", reward: "25 💎 + 1 ❤️",               xp: 100  },
@@ -16,6 +21,8 @@ const LEAGUES = [
   { name: "Liga Lendário",  emoji: "👑", color: "#FFD700", bg: "#1E1E1E", border: "#2A2A2A", reward: "1000 💎 + Mentoria",          xp: 4000 },
 ];
 
+// Retorna o índice da liga atual com base no XP do usuário
+// Percorre do início ao fim e mantém o maior índice cujo XP mínimo foi atingido
 function getCurrentLeagueIndex(totalXp: number): number {
   let current = 0;
   for (let i = 0; i < LEAGUES.length; i++) {
@@ -28,6 +35,7 @@ export default function PremiosScreen() {
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Recarrega o dashboard toda vez que a aba recebe foco
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
@@ -39,26 +47,29 @@ export default function PremiosScreen() {
   );
 
   const xp = dashboard?.userStats?.totalXp ?? 0;
-  const currentLeagueIndex = getCurrentLeagueIndex(xp);
+  const currentLeagueIndex = getCurrentLeagueIndex(xp); // índice da liga que o usuário está
 
   const { lives } = useLives();
 
   return (
     <View style={styles.screen}>
+      {/* Header com logo e estatísticas */}
       <AppHeader streak={dashboard?.userStats?.currentStreak ?? 0} xp={xp} lives={lives} loading={loading} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
+        {/* Card de apresentação da tela */}
         <View style={styles.topCard}>
           <Text style={styles.topIcon}>🎁</Text>
           <Text style={styles.topTitle}>Prêmios</Text>
           <Text style={styles.topSub}>Suba de liga e desbloqueie recompensas exclusivas</Text>
         </View>
 
+        {/* ── Lista de todas as ligas ── */}
         <View style={styles.listContainer}>
           {LEAGUES.map((league, index) => {
-            const isCurrent  = index === currentLeagueIndex;
-            const isUnlocked = xp >= league.xp;
+            const isCurrent  = index === currentLeagueIndex; // liga onde o usuário está agora
+            const isUnlocked = xp >= league.xp;             // liga já alcançada pelo XP
 
             return (
               <View
@@ -66,13 +77,15 @@ export default function PremiosScreen() {
                 style={[
                   styles.leagueCard,
                   { backgroundColor: league.bg, borderColor: isCurrent ? "#4CAF50" : league.border },
-                  isCurrent && styles.leagueCardCurrent,
+                  isCurrent && styles.leagueCardCurrent, // borda verde na liga atual
                 ]}
               >
+                {/* Ícone/emoji da liga */}
                 <View style={[styles.leagueIcon, { borderColor: league.color + "55" }]}>
                   <Text style={styles.leagueEmoji}>{league.emoji}</Text>
                 </View>
 
+                {/* Nome, badge "ATUAL", prêmio e XP necessário */}
                 <View style={styles.leagueInfo}>
                   <View style={styles.leagueNameRow}>
                     <Text style={[styles.leagueName, { color: league.color }]}>{league.name}</Text>
@@ -88,6 +101,7 @@ export default function PremiosScreen() {
                   </Text>
                 </View>
 
+                {/* Ícone de cadeado (bloqueada) ou check (desbloqueada) */}
                 {isUnlocked ? (
                   <View style={styles.checkCircle}>
                     <MaterialIcons name="check" size={20} color="#4CAF50" />
@@ -108,6 +122,7 @@ export default function PremiosScreen() {
   );
 }
 
+// Header reutilizável: logo + streak, XP e vidas
 function AppHeader({ streak, xp, lives, loading }: { streak: number; xp: number; lives: number; loading: boolean }) {
   return (
     <View style={styles.appHeader}>
@@ -121,6 +136,7 @@ function AppHeader({ streak, xp, lives, loading }: { streak: number; xp: number;
         {loading ? (
           <ActivityIndicator color="#9EF01A" size="small" />
         ) : (
+          // Renderiza os 3 itens de estatística dinamicamente a partir de um array
           [["🔥", streak, "#FF6B00"], ["⚡", xp, "#FFD700"], ["❤️", lives, "#EF4444"]].map(
             ([icon, val, color]) => (
               <View key={String(icon)} style={styles.statItem}>

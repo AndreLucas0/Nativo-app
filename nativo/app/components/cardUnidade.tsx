@@ -1,16 +1,22 @@
+// ARQUIVO: app/components/cardUnidade.tsx
+// Componente visual do cabeçalho de um módulo na trilha de aprendizado.
+// Exibe: ícone do módulo, número da unidade e título — com gradiente temático.
+
 import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode } from "react";
 
+// Temas disponíveis para colorir o card do módulo
 type Tema = "verde" | "azul" | "amarelo";
 
 type Props = {
-  titulo: string;
-  numero: number;
-  tema?: Tema;
-  icon: ReactNode;
+  titulo: string;   // título do módulo (ex: "Fundamentos do Expo")
+  numero: number;   // número da unidade (ex: 1, 2, 3...)
+  tema?: Tema;      // define as cores do gradiente e do texto
+  icon: ReactNode;  // ícone renderizado dentro do quadrado à esquerda
 };
 
+// Mapeamento de cada tema para suas cores específicas
 const temas = {
   verde: {
     borderColor: "#9EF01A",
@@ -32,16 +38,12 @@ const temas = {
   },
 };
 
-export default function CardUnidade({
-  titulo,
-  numero,
-  tema = "verde",
-  icon,
-}: Props) {
+export default function CardUnidade({ titulo, numero, tema = "verde", icon }: Props) {
 
-  const temaAtual = temas[tema];
+  const temaAtual = temas[tema]; // seleciona as cores do tema recebido
 
   return (
+    // LinearGradient cria o fundo com degradê do tema
     <LinearGradient
       colors={temaAtual.gradient}
       start={{ x: 0, y: 0 }}
@@ -54,22 +56,18 @@ export default function CardUnidade({
         },
       ]}
     >
+      {/* Quadrado com o ícone do módulo (ex: BookOpen) */}
       <View style={styles.IconUnidade}>
         {icon}
       </View>
 
       <View>
-        <Text
-          style={[
-            styles.unidade,
-            {
-              color: temaAtual.textColor,
-            },
-          ]}
-        >
+        {/* Rótulo "UNIDADE N" com a cor temática */}
+        <Text style={[styles.unidade, { color: temaAtual.textColor }]}>
           UNIDADE {numero}
         </Text>
 
+        {/* Título do módulo em branco */}
         <Text style={styles.texto}>
           {titulo}
         </Text>
@@ -82,26 +80,19 @@ const styles = StyleSheet.create({
   card: {
     width: "90%",
     padding: 20,
-
     borderRadius: 18,
-
-    flexDirection: "row",
+    flexDirection: "row",  // ícone à esquerda, textos à direita
     alignItems: "center",
-
     gap: 12,
-
     alignSelf: "center",
-
     marginTop: 20,
-
     borderWidth: 2,
-
     shadowOpacity: 0.25,
     shadowRadius: 10,
-
-    elevation: 8,
+    elevation: 8,          // sombra no Android
   },
 
+  // Rótulo "UNIDADE N" em letras maiúsculas com espaçamento
   unidade: {
     fontSize: 12,
     fontWeight: "bold",
@@ -109,18 +100,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
+  // Quadrado escuro que envolve o ícone
   IconUnidade: {
     width: 45,
     height: 45,
-
     borderRadius: 12,
-
     backgroundColor: "#101A00",
-
     alignItems: "center",
     justifyContent: "center",
   },
 
+  // Título do módulo
   texto: {
     color: "#FFF",
     fontSize: 18,

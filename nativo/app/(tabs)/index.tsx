@@ -1,3 +1,7 @@
+// ARQUIVO: app/(tabs)/index.tsx
+// Tela principal "Aprender": exibe as estatísticas do usuário (XP, streak, vidas),
+// o card da sessão atual e a trilha de módulos/atividades do curso.
+
 import { useCallback, useState, useEffect } from "react";
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Flame, Zap, Heart, BookOpen, Bookmark } from "lucide-react-native";
@@ -10,8 +14,9 @@ import { api, DashboardResponse, CourseDetailResponse } from "../../services/api
 import { useAuth } from "../../context/AuthContext";
 import { useLives } from "../../context/LivesContext";
 
-const BG = "#131f24";
+const BG = "#131f24"; // cor de fundo padrão do app
 
+// Temas visuais dos módulos: cada módulo recebe um tema diferente ciclicamente
 type Tema = "verde" | "azul" | "amarelo";
 
 const TEMAS: { tema: Tema; cor: string; corBanner: [string, string] }[] = [
@@ -20,12 +25,14 @@ const TEMAS: { tema: Tema; cor: string; corBanner: [string, string] }[] = [
   { tema: "amarelo", cor: "#FFD60A", corBanner: ["#4a3a00", "#2a2000"] },
 ];
 
+// Posições horizontais dos nós na trilha: alternância esquerda/centro/direita
 const POSICOES: (["left" | "center" | "right", "center" | "right" | "left", "right" | "left" | "center"])[] = [
   ["left",  "center", "right"],
   ["right", "center", "left"],
   ["left",  "center", "right"],
 ];
 
+// Tipo local que representa um módulo com suas atividades mapeadas
 type Nivel = {
   id: number;
   lessonId: string;
@@ -37,6 +44,10 @@ type Nivel = {
   atividades: { id: number; lessonId: string; titulo: string; locked: boolean }[];
 };
 
+// Converte os dados do curso (API) em níveis com lógica de desbloqueio:
+// - O 1º módulo está sempre desbloqueado
+// - Módulos seguintes exigem que o módulo anterior esteja 100% concluído
+// - Dentro de um módulo, as lições se desbloqueiam em sequência
 function mapCourseToNiveis(course: CourseDetailResponse, completedIds: Set<string>): Nivel[] {
   return course.modules.map((mod, modIndex) => {
     const temaInfo = TEMAS[modIndex % TEMAS.length];
@@ -68,6 +79,8 @@ function mapCourseToNiveis(course: CourseDetailResponse, completedIds: Set<strin
 export default function Index() {
   const { logout } = useAuth();
   const { lives, nextLifeAt } = useLives();
+
+  // Contagem regressiva para a próxima vida regenerar (atualiza a cada segundo)
   const [lifeCountdown, setLifeCountdown] = useState<string | null>(null);
 
   useEffect(() => {
@@ -80,10 +93,11 @@ export default function Index() {
       setLifeCountdown(`${m}:${s.toString().padStart(2, '0')}`);
     };
     update();
-    const id = setInterval(update, 1000);
+    const id = setInterval(update, 1000); // atualiza o contador a cada 1 segundo
     return () => clearInterval(id);
   }, [nextLifeAt]);
 
+  // Carrega a fonte SpaceMono (usada em alguns textos)
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../../assets/fonts/Space_Mono/SpaceMono-Regular.ttf"),
     SpaceMonoBold: require("../../assets/fonts/Space_Mono/SpaceMono-Bold.ttf"),
@@ -93,32 +107,35 @@ export default function Index() {
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Recarrega os dados sempre que a tela recebe foco (ex: ao voltar da atividade)
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
+      // Busca em paralelo: detalhes do curso + estatísticas do dashboard
       Promise.all([
         api.get<CourseDetailResponse>('/api/courses/expo-react-native').catch(() => null),
         api.get<DashboardResponse>('/api/progress/dashboard').catch(() => null),
       ]).then(([course, dash]) => {
         if (course) {
           const completedIds = new Set(dash?.passedLessonIds ?? []);
-          setNiveis(mapCourseToNiveis(course, completedIds));
+          setNiveis(mapCourseToNiveis(course, completedIds)); // monta a trilha com lock/unlock
         }
         if (dash) setDashboard(dash);
       }).finally(() => setLoading(false));
     }, [])
   );
 
+  // Aguarda as fontes carregarem antes de renderizar
   if (!fontsLoaded) return null;
 
   const stats = dashboard?.userStats;
-  const sessaoAtual = niveis[0];
-  const atividadeAtual = niveis[0]?.atividades[0];
+  const sessaoAtual = niveis[0];        // primeiro módulo = sessão em destaque
+  const atividadeAtual = niveis[0]?.atividades[0]; // primeira atividade do módulo
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
 
-      {/* ── HEADER ── */}
+      {/* ── HEADER: logo + estatísticas (streak, XP, vidas) ── */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View style={styles.logo}>
@@ -128,18 +145,21 @@ export default function Index() {
         </View>
 
         <View style={styles.statsRow}>
+          {/* Streak atual (dias consecutivos) */}
           <View style={styles.statItem}>
             <Flame size={20} color="#FF7A00" />
             <Text style={[styles.statText, { color: "#FF7A00" }]}>
               {stats?.currentStreak ?? 0}
             </Text>
           </View>
+          {/* XP total acumulado */}
           <View style={styles.statItem}>
             <Zap size={20} color="#FFD60A" fill="#FFD60A" />
             <Text style={[styles.statText, { color: "#FFD60A" }]}>
               {stats?.totalXp ?? 0}
             </Text>
           </View>
+          {/* Vidas restantes + contagem regressiva da regeneração */}
           <View style={styles.statItem}>
             <Heart size={20} color="#FF4D6D" fill="#FF4D6D" />
             <Text style={[styles.statText, { color: "#FF4D6D" }]}>{lives}</Text>
@@ -150,7 +170,7 @@ export default function Index() {
         </View>
       </View>
 
-      {/* ── SESSÃO ATUAL ── */}
+      {/* ── CARD DA SESSÃO ATUAL: atalho para a próxima atividade ── */}
       {loading ? (
         <View style={{ padding: 40, alignItems: "center" }}>
           <ActivityIndicator color="#9EF01A" size="large" />
@@ -175,6 +195,7 @@ export default function Index() {
                 <Text style={styles.sessaoTitulo}>{atividadeAtual.titulo}</Text>
                 <Text style={styles.sessaoSubtitulo}>{sessaoAtual.titulo}</Text>
               </View>
+              {/* Botão INICIAR navega para a tela de exercícios da lição */}
               <TouchableOpacity
                 style={[styles.iniciarBtn, { backgroundColor: sessaoAtual.cor }]}
                 onPress={() => router.push(`/atividade/${atividadeAtual.lessonId}`)}
@@ -186,9 +207,10 @@ export default function Index() {
         </View>
       ) : null}
 
-      {/* ── TRILHA ── */}
+      {/* ── TRILHA DE APRENDIZADO: um CardUnidade por módulo com seus TrilhaItems ── */}
       {niveis.map((nivel, nivelIndex) => (
         <View key={nivel.id}>
+          {/* Cabeçalho do módulo (número, título, tema) */}
           <CardUnidade
             titulo={nivel.titulo}
             numero={nivel.id}
@@ -196,6 +218,7 @@ export default function Index() {
             icon={nivel.icon}
           />
 
+          {/* Nós da trilha: cada atividade vira um botão circular na trilha */}
           <View style={styles.trilhaContainer}>
             {nivel.atividades.map((atividade, index) => (
               <TrilhaItem
@@ -204,7 +227,7 @@ export default function Index() {
                 posicao={POSICOES[nivelIndex % POSICOES.length][index % 3]}
                 rota={`/atividade/${atividade.lessonId}`}
                 tema={nivel.tema}
-                locked={atividade.locked}
+                locked={atividade.locked} // bloqueado até completar o anterior
               />
             ))}
           </View>

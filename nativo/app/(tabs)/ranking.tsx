@@ -1,3 +1,7 @@
+// ARQUIVO: app/(tabs)/ranking.tsx
+// Tela de Ranking global: exibe a lista de todos os jogadores ordenada por XP,
+// a liga atual do usuário e a posição dele na tabela (com alerta de zona de queda).
+
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -5,9 +9,12 @@ import { useFocusEffect } from "expo-router";
 import { api, DashboardResponse, RankingEntry } from "../../services/api";
 import { useLives } from "../../context/LivesContext";
 
+// Top 3 ganham prêmio; posição 9+ pode cair de liga
 const PRIZE_ZONE = 3;
 const DROP_ZONE  = 9;
 
+// Retorna o estilo do badge de posição para o pódio (ouro/prata/bronze)
+// Posições 4+ retornam null (sem badge especial)
 function getBadgeStyle(pos: number) {
   if (pos === 1) return { bg: "#FFD700", text: "👑" };
   if (pos === 2) return { bg: "#C0C0C0", text: "2" };
@@ -15,6 +22,8 @@ function getBadgeStyle(pos: number) {
   return null;
 }
 
+// Determina a liga do usuário com base no XP total acumulado
+// Retorna: nome da liga, medalha, XP necessário para a próxima e cor temática
 function getLeagueFromXp(xp: number) {
   if (xp >= 4000) return { name: "Liga Lendário", medal: "👑", xpNext: null,  color: "#FFD700" };
   if (xp >= 2500) return { name: "Liga Diamante",  medal: "💎", xpNext: 4000, color: "#818CF8" };
@@ -26,6 +35,7 @@ function getLeagueFromXp(xp: number) {
   return           { name: "Liga Bronze",           medal: "🥉", xpNext: 100,  color: "#CD7F32" };
 }
 
+// Extrai as iniciais do nome para o avatar padrão (quando não há foto)
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 }
@@ -37,10 +47,12 @@ export default function RankingScreen() {
   const [loadError, setLoadError] = useState(false);
   const { lives } = useLives();
 
+  // Recarrega o ranking toda vez que a aba recebe foco
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
       setLoadError(false);
+      // Busca em paralelo: lista do ranking + dashboard com stats do usuário
       Promise.all([
         api.get<RankingEntry[]>("/api/users/ranking"),
         api.get<DashboardResponse>("/api/progress/dashboard"),
@@ -54,23 +66,27 @@ export default function RankingScreen() {
     }, [])
   );
 
-  const me     = players.find((p) => p.isCurrentUser);
-  const myXp   = me?.totalXp ?? dashboard?.userStats?.totalXp ?? 0;
+  // Dados do usuário logado dentro da lista de ranking
+  const me       = players.find((p) => p.isCurrentUser);
+  const myXp     = me?.totalXp ?? dashboard?.userStats?.totalXp ?? 0;
   const myStreak = me?.currentStreak ?? dashboard?.userStats?.currentStreak ?? 0;
-  const myPos  = me?.position ?? 0;
-  const total  = players.length;
-  const league = getLeagueFromXp(myXp);
+  const myPos    = me?.position ?? 0;
+  const total    = players.length;
+  const league   = getLeagueFromXp(myXp); // liga calculada a partir do XP
 
   return (
     <View style={styles.screen}>
+      {/* Header com logo e estatísticas do usuário */}
       <AppHeader streak={myStreak} xp={myXp} lives={lives} loading={loading} />
 
+      {/* Spinner de carregamento */}
       {loading && (
         <View style={styles.centered}>
           <ActivityIndicator color="#4CAF50" size="large" />
         </View>
       )}
 
+      {/* Mensagem de erro ao falhar o carregamento */}
       {!loading && loadError && (
         <View style={styles.centered}>
           <Text style={styles.errorText}>⚠️ Não foi possível carregar o ranking.</Text>
@@ -80,7 +96,7 @@ export default function RankingScreen() {
       {!loading && !loadError && (
         <ScrollView showsVerticalScrollIndicator={false}>
 
-          {/* ── Card liga atual ── */}
+          {/* ── Card da liga atual do usuário ── */}
           <View style={styles.leagueCard}>
             <Text style={styles.leagueMedal}>{league.medal}</Text>
             <Text style={[styles.leagueName, { color: league.color }]}>{league.name}</Text>
@@ -95,7 +111,7 @@ export default function RankingScreen() {
             </View>
           </View>
 
-          {/* ── Sua posição ── */}
+          {/* ── Card da posição do usuário no ranking ── */}
           {myPos > 0 && (
             <View style={styles.positionCard}>
               <View>
@@ -105,6 +121,7 @@ export default function RankingScreen() {
                   <Text style={styles.positionOf}> de {total}</Text>
                 </View>
               </View>
+              {/* Alerta de zona de queda se estiver entre os últimos */}
               {myPos >= DROP_ZONE && (
                 <View style={styles.dropZoneBadge}>
                   <MaterialIcons name="keyboard-arrow-down" size={16} color="#EF4444" />
@@ -114,18 +131,19 @@ export default function RankingScreen() {
             </View>
           )}
 
-          {/* ── Lista de jogadores ── */}
+          {/* ── Lista de todos os jogadores ── */}
           <View style={styles.listContainer}>
             {players.map((p) => {
-              const isPrize = p.position <= PRIZE_ZONE;
-              const isDrop  = p.position >= DROP_ZONE;
-              const badge   = getBadgeStyle(p.position);
+              const isPrize = p.position <= PRIZE_ZONE; // top 3 → ganha prêmio
+              const isDrop  = p.position >= DROP_ZONE;  // últimos → pode cair de liga
+              const badge   = getBadgeStyle(p.position); // badge do pódio (null se >3)
 
               return (
                 <View
                   key={p.userId}
                   style={[styles.playerRow, p.isCurrentUser && styles.playerRowMe]}
                 >
+                  {/* Badge do pódio ou círculo com número da posição */}
                   {badge ? (
                     <View style={[styles.posBadge, { backgroundColor: badge.bg }]}>
                       <Text style={styles.posBadgeText}>{badge.text}</Text>
@@ -136,6 +154,7 @@ export default function RankingScreen() {
                     </View>
                   )}
 
+                  {/* Avatar: foto de perfil ou iniciais do nome */}
                   {p.profileImageUrl ? (
                     <Image source={{ uri: p.profileImageUrl }} style={styles.avatarImage} />
                   ) : (
@@ -144,6 +163,7 @@ export default function RankingScreen() {
                     </View>
                   )}
 
+                  {/* Nome do jogador + tags de prêmio ou queda */}
                   <View style={styles.playerInfo}>
                     <Text style={[styles.playerName, p.isCurrentUser && styles.playerNameMe]}>
                       {p.isCurrentUser ? "Você" : p.name}
@@ -162,6 +182,7 @@ export default function RankingScreen() {
                     )}
                   </View>
 
+                  {/* XP total do jogador */}
                   <View style={styles.xpCol}>
                     <Text style={[styles.xpValue, p.isCurrentUser && styles.xpValueMe]}>
                       {p.totalXp}
@@ -182,6 +203,7 @@ export default function RankingScreen() {
   );
 }
 
+// Componente de header reutilizado: logo + estatísticas (streak, XP, vidas)
 function AppHeader({
   streak, xp, lives, loading,
 }: {
@@ -210,6 +232,7 @@ function AppHeader({
   );
 }
 
+// Componente auxiliar: exibe um ícone + valor numérico colorido (streak, XP ou vidas)
 function StatItem({ icon, value, color }: { icon: string; value: number; color: string }) {
   return (
     <View style={styles.statItem}>
@@ -281,9 +304,7 @@ const styles = StyleSheet.create({
   },
   posCircleText: { color: "#aaa", fontSize: 14, fontWeight: "700" },
 
-  avatarImage: {
-    width: 38, height: 38, borderRadius: 19,
-  },
+  avatarImage:    { width: 38, height: 38, borderRadius: 19 },
   avatarCircle: {
     width: 38, height: 38, borderRadius: 19, backgroundColor: "#2D4A2D",
     justifyContent: "center", alignItems: "center",

@@ -1,3 +1,8 @@
+// ARQUIVO: app/login.tsx
+// Tela de Login e Cadastro.
+// Alterna entre os modos "login" e "register" com um botão de troca.
+// Valida os campos localmente antes de chamar a API via AuthContext.
+
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
@@ -7,17 +12,25 @@ import { router } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginScreen() {
-  const { login, register } = useAuth();
+  const { login, register } = useAuth(); // funções de autenticação do contexto
 
+  // Controla qual formulário está visível: 'login' ou 'register'
   const [mode, setMode] = useState<'login' | 'register'>('login');
+
+  // Estados dos campos do formulário
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Estados de feedback para o usuário
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Executado ao pressionar o botão "Entrar" ou "Cadastrar"
   const handleSubmit = async () => {
     setError('');
+
+    // Validação básica dos campos obrigatórios
     if (!email.trim() || !password.trim()) {
       setError('Preencha todos os campos.');
       return;
@@ -30,11 +43,11 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (mode === 'login') {
-        await login(email.trim(), password);
+        await login(email.trim(), password); // chama API de login
       } else {
-        await register(name.trim(), email.trim(), password);
+        await register(name.trim(), email.trim(), password); // chama API de registro
       }
-      router.replace('/(tabs)');
+      router.replace('/(tabs)'); // sucesso → vai para as abas principais
     } catch (err: any) {
       setError(err?.message ?? 'Erro ao autenticar. Tente novamente.');
     } finally {
@@ -43,13 +56,14 @@ export default function LoginScreen() {
   };
 
   return (
+    // KeyboardAvoidingView empurra o conteúdo para cima quando o teclado abre no iOS
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
-        {/* Logo */}
+        {/* Logo do app */}
         <View style={styles.logoRow}>
           <View style={styles.logoBox}>
             <Text style={styles.logoLetter}>N</Text>
@@ -57,6 +71,7 @@ export default function LoginScreen() {
           <Text style={styles.logoText}>Nativo</Text>
         </View>
 
+        {/* Título e subtítulo mudam conforme o modo (login vs cadastro) */}
         <Text style={styles.headline}>
           {mode === 'login' ? 'Bem-vindo de volta!' : 'Crie sua conta'}
         </Text>
@@ -66,7 +81,7 @@ export default function LoginScreen() {
             : 'Comece a aprender agora mesmo.'}
         </Text>
 
-        {/* Campos */}
+        {/* Campo de nome — aparece somente no modo de cadastro */}
         {mode === 'register' && (
           <TextInput
             style={styles.input}
@@ -78,6 +93,7 @@ export default function LoginScreen() {
           />
         )}
 
+        {/* Campo de e-mail */}
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -88,6 +104,7 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
 
+        {/* Campo de senha (oculta o texto) */}
         <TextInput
           style={styles.input}
           placeholder="Senha"
@@ -97,8 +114,10 @@ export default function LoginScreen() {
           secureTextEntry
         />
 
+        {/* Mensagem de erro — só aparece se houver erro */}
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
+        {/* Botão principal: mostra spinner enquanto a requisição está em andamento */}
         <TouchableOpacity style={styles.btn} onPress={handleSubmit} disabled={loading}>
           {loading
             ? <ActivityIndicator color="#000" />
@@ -106,6 +125,7 @@ export default function LoginScreen() {
           }
         </TouchableOpacity>
 
+        {/* Botão para alternar entre login e cadastro */}
         <TouchableOpacity
           style={styles.switchBtn}
           onPress={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}

@@ -1,10 +1,14 @@
+// ARQUIVO: services/api.ts
+// Camada de comunicação com o backend.
+// Contém: armazenamento de tokens, cliente HTTP com refresh automático de token,
+// e todos os tipos TypeScript que espelham as respostas da API.
+
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { authBus } from '../utils/authBus';
 
-// ── Configuração de rede ──────────────────────────────────────────────────────
-// Produção (EC2): defina EXPO_PUBLIC_API_URL=http://<EC2_IP>:8080 em nativo/.env
-// Dev iOS físico: defina LOCAL_MACHINE_IP com seu IP local (ipconfig/ifconfig)
+// ── URL base do servidor ──────────────────────────────────────────────────────
+// Prioridade: variável de ambiente → plataforma detectada → IP local configurado
 const LOCAL_MACHINE_IP = '192.168.1.100'; // <-- ALTERE AQUI (dev local apenas)
 
 function resolveBaseUrl() {
@@ -16,10 +20,11 @@ function resolveBaseUrl() {
 
 export const BASE_URL = resolveBaseUrl();
 
+// ── Chaves de armazenamento dos tokens JWT ────────────────────────────────────
 const ACCESS_TOKEN_KEY = 'nativo_access_token';
 const REFRESH_TOKEN_KEY = 'nativo_refresh_token';
 
-// expo-secure-store só funciona em native; usa localStorage como fallback na web
+// Abstração de storage: usa SecureStore no nativo e localStorage na web
 const storage = {
   getItem: (key: string): Promise<string | null> => {
     if (Platform.OS === 'web') {
@@ -43,6 +48,7 @@ const storage = {
   },
 };
 
+// ── Funções para ler, salvar e apagar os tokens JWT ───────────────────────────
 export const tokenStorage = {
   getAccess: () => storage.getItem(ACCESS_TOKEN_KEY),
   getRefresh: () => storage.getItem(REFRESH_TOKEN_KEY),
@@ -50,20 +56,22 @@ export const tokenStorage = {
     await storage.setItem(ACCESS_TOKEN_KEY, access);
     await storage.setItem(REFRESH_TOKEN_KEY, refresh);
   },
+  // Apaga ambos os tokens (usado no logout ou quando a sessão expira)
   clear: async () => {
     await storage.removeItem(ACCESS_TOKEN_KEY);
     await storage.removeItem(REFRESH_TOKEN_KEY);
   },
 };
 
+// Classe de erro customizada para carregar o status HTTP junto à mensagem
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
   }
 }
 
-// ── Token refresh ─────────────────────────────────────────────────────────────
-
+// ── Renovação automática do access token ──────────────────────────────────────
+// Chamado quando a API retorna 401: tenta trocar o refreshToken por um novo par de tokens
 async function tryRefreshToken(): Promise<string | null> {
   const refreshToken = await tokenStorage.getRefresh();
   if (!refreshToken) return null;
@@ -82,27 +90,9 @@ async function tryRefreshToken(): Promise<string | null> {
   }
 }
 
-// ── HTTP client ───────────────────────────────────────────────────────────────
-
-async function executeRequest<T>(
-  path: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-  body: object | undefined,
-  token: string | null,
-): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  if (response.status === 204) return undefined as T;
-  return response;
-}
-
+// ── Função principal de requisição HTTP ───────────────────────────────────────
+// Envia a requisição com o token atual. Se receber 401, tenta renovar o token
+// e retentar. Se o refresh também falhar, desloga o usuário via authBus.
 async function request<T>(
   path: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
@@ -119,14 +109,14 @@ async function request<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  // 204 = No Content → retorna undefined sem tentar ler o corpo
   if (response.status === 204) return undefined as T;
 
   // ── Interceptor 401: tenta refresh antes de deslogar ─────────────────────
   if (response.status === 401 && path !== '/api/auth/refresh') {
     const newToken = await tryRefreshToken();
     if (newToken) {
-      // Retentar com o novo token (sem loop — não passa por este bloco de novo
-      // porque a chamada interna usa o token diretamente)
+      // Retentar com o novo token
       const retryResponse = await fetch(`${BASE_URL}${path}`, {
         method,
         headers: {
@@ -142,12 +132,13 @@ async function request<T>(
       }
       return retryResponse.json();
     }
-    // Refresh falhou — limpar sessão e notificar a aplicação
+    // Refresh falhou → limpa sessão e notifica o AuthContext para deslogar
     await tokenStorage.clear();
     authBus.emit();
     throw new ApiError(401, 'Sessão expirada. Faça login novamente.');
   }
 
+  // Qualquer outro erro HTTP → lança ApiError com a mensagem do servidor
   if (!response.ok) {
     const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
     throw new ApiError(response.status, err.message ?? `HTTP ${response.status}`);
@@ -156,20 +147,24 @@ async function request<T>(
   return response.json();
 }
 
+// ── Objeto público da API ─────────────────────────────────────────────────────
+// Atalhos para os métodos HTTP mais usados nas telas
 export const api = {
-  get: <T>(path: string) => request<T>(path, 'GET'),
+  get:  <T>(path: string)              => request<T>(path, 'GET'),
   post: <T>(path: string, body?: object) => request<T>(path, 'POST', body),
-  put: <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
+  put:  <T>(path: string, body?: object) => request<T>(path, 'PUT', body),
 };
 
-// ── Tipos espelhando o backend ────────────────────────────────────────────────
+// ── Tipos TypeScript das respostas do backend ─────────────────────────────────
 
+// Retorno do login e do registro
 export type AuthResponse = {
   accessToken: string;
   refreshToken: string;
   user: { id: string; name: string; email: string; totalXp: number; currentLevel: number };
 };
 
+// Dashboard principal: estatísticas, cursos ativos e lições concluídas recentemente
 export type DashboardResponse = {
   userStats: {
     totalXp: number;
@@ -196,9 +191,10 @@ export type DashboardResponse = {
     xpEarned: number;
     completedAt: string;
   }[];
-  passedLessonIds: string[];
+  passedLessonIds: string[]; // IDs de todas as lições que o usuário já concluiu
 };
 
+// Item da lista de cursos disponíveis
 export type CourseListItem = {
   id: string;
   slug: string;
@@ -209,6 +205,7 @@ export type CourseListItem = {
   difficulty: string;
 };
 
+// Detalhes completos de um curso (módulos + lições)
 export type CourseDetailResponse = {
   id: string;
   slug: string;
@@ -230,6 +227,7 @@ export type CourseDetailResponse = {
   }[];
 };
 
+// Conteúdo de uma lição com seus exercícios
 export type LessonContentResponse = {
   id: string;
   title: string;
@@ -237,7 +235,7 @@ export type LessonContentResponse = {
   content: string;
   xpReward: number;
   minimumScore: number;
-  alreadyCompleted: boolean;
+  alreadyCompleted: boolean; // true se o usuário já completou esta lição antes
   exercises: {
     id: string;
     question: string;
@@ -247,12 +245,14 @@ export type LessonContentResponse = {
   }[];
 };
 
+// Retorno ao submeter a resposta de um exercício
 export type ExerciseSubmitResponse = {
   attemptId: string;
-  correct: boolean;
-  explanation: string;
+  correct: boolean;      // true se o usuário acertou
+  explanation: string;   // explicação da resposta correta
 };
 
+// Perfil completo do usuário logado
 export type UserProfileResponse = {
   id: string;
   email: string;
@@ -265,16 +265,19 @@ export type UserProfileResponse = {
   lastActivityDate: string | null;
 };
 
+// Corpo da requisição de atualização de perfil
 export type UpdateProfileRequest = {
   name?: string;
   profileImageUrl?: string;
 };
 
+// Corpo da requisição de troca de senha
 export type ChangePasswordRequest = {
   currentPassword: string;
   newPassword: string;
 };
 
+// Uma entrada no ranking global
 export type RankingEntry = {
   position: number;
   userId: string;
@@ -283,9 +286,10 @@ export type RankingEntry = {
   totalXp: number;
   currentLevel: number;
   currentStreak: number;
-  isCurrentUser: boolean;
+  isCurrentUser: boolean; // true para destacar o próprio usuário na lista
 };
 
+// Resultado ao completar uma lição: XP ganho, aprovação, streaks atualizados
 export type LessonCompleteResponse = {
   passed: boolean;
   score: number;
